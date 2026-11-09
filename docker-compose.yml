@@ -1,0 +1,43 @@
+# Menjalankan seluruh prototipe dengan satu perintah:  docker compose up --build
+# Lalu isi data sintetis:  docker compose exec backend python -m app.seed
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: scentra
+      POSTGRES_PASSWORD: scentra
+      POSTGRES_DB: scentra
+    ports:
+      - "5432:5432"
+    volumes:
+      - scentra-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scentra -d scentra"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://scentra:scentra@db:5432/scentra
+      CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
+      # Ganti sebelum deployment nyata.
+      SECRET_KEY: ganti-saat-deployment
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  scentra-db:
