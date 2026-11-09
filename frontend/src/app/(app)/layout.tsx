@@ -6,17 +6,29 @@ import { useEffect, useState } from "react";
 
 import { clearSession, getUser, type User } from "@/lib/api";
 
+// `roles` kosong berarti terbuka untuk semua peran.
 const NAV = [
   {
     section: "Operasional",
     items: [
-      { href: "/dashboard", label: "Dashboard", icon: "◧" },
-      { href: "/inbox", label: "Unified Inbox", icon: "✉" },
+      { href: "/dashboard", label: "Dashboard", icon: "◧", roles: [] as string[] },
+      { href: "/inbox", label: "Unified Inbox", icon: "✉", roles: [] as string[] },
+    ],
+  },
+  {
+    section: "Analisis",
+    items: [
+      {
+        href: "/profitability",
+        label: "Profitabilitas",
+        icon: "▤",
+        roles: ["supervisor", "owner"],
+      },
     ],
   },
   {
     section: "Pengaturan",
-    items: [{ href: "/knowledge", label: "Knowledge Base", icon: "◆" }],
+    items: [{ href: "/knowledge", label: "Knowledge Base", icon: "◆", roles: [] as string[] }],
   },
 ];
 
@@ -45,6 +57,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
+  const visibleNav = NAV.map((group) => ({
+    ...group,
+    items: group.items.filter((i) => !i.roles.length || i.roles.includes(user.role)),
+  })).filter((group) => group.items.length);
+
   return (
     <div className="app-bg min-h-screen">
       <div className="mx-auto flex max-w-[1600px]">
@@ -60,7 +77,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
 
           <nav className="flex-1 space-y-6">
-            {NAV.map((group) => (
+            {visibleNav.map((group) => (
               <div key={group.section}>
                 <p className="mb-2 px-2 text-[10px] font-semibold tracking-[0.09em] text-faint uppercase">
                   {group.section}
@@ -111,7 +128,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
 
             <nav className="flex gap-1 lg:hidden">
-              {NAV.flatMap((g) => g.items).map((item) => (
+              {visibleNav.flatMap((g) => g.items).map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}

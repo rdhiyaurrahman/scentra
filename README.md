@@ -1,8 +1,13 @@
 # Scentra — Manual Unified Inbox
 
-Workspace internal customer service untuk Scentra Parfume (oleh-oleh haji & herbal).
-CS mencatat pesan pelanggan dari **Shopee, TikTok Shop, dan Lazada** ke satu antrean,
-sistem mengklasifikasikan pesan dan menyusun rekomendasi balasan dari knowledge base toko.
+Workspace internal untuk Scentra Parfume (oleh-oleh haji & herbal), menjawab dua masalah
+pada studi kasus COMPARE 2026:
+
+1. **Layanan pelanggan.** CS mencatat pesan dari **Shopee, TikTok Shop, dan Lazada** ke
+   satu antrean. Sistem mengklasifikasikan pesan dan menyusun rekomendasi balasan dari
+   knowledge base toko, sehingga keluhan tidak tertimbun pertanyaan berulang.
+2. **Profitabilitas produk.** Pemilik melihat laba per produk, per marketplace, dan per
+   periode setelah komisi, voucher, ongkir yang ditanggung penjual, dan retur.
 
 > **Scentra tidak terhubung ke API marketplace mana pun.** Pesan dimasukkan manual oleh CS,
 > dan balasan tetap dikirim CS melalui Seller Center masing-masing marketplace. Endpoint
@@ -84,6 +89,8 @@ Seluruhnya data sintetis. Tidak ada data pelanggan nyata maupun kredensial toko.
 
 ## 2. Masalah yang dibantu
 
+### Masalah 1 — pertanyaan berulang di chat
+
 Dari studi kasus: CS berulang kali mengetik jawaban yang sama ("Ready, Kak?",
 "Ada ukuran apa saja?", "Bisa dikirim hari ini?"), sehingga pembeli yang menyampaikan
 **keluhan** justru menunggu lebih lama.
@@ -96,8 +103,23 @@ Scentra menangani tiga jenis pesan yang disebut studi kasus:
 | Keluhan               | "Kok yang dikirim 500 g?"                    | Diberi label komplain, prioritas tinggi, diteruskan ke staf |
 | Informasi belum pasti | Stok atau cutoff tidak diketahui             | Tidak membuat klaim, meminta staf memeriksa lebih dulu     |
 
-**Cakupan versi ini:** hanya Masalah 1 (layanan pelanggan). Masalah 2 studi kasus
-(profitabilitas per produk dan per marketplace) belum dikerjakan dan tidak diklaim ada.
+### Masalah 2 — keuntungan per produk belum jelas
+
+Omzet besar belum berarti untung. Setiap marketplace memotong komisi, voucher, ongkir
+yang ditanggung penjual, dan retur dengan besaran berbeda, sehingga pemilik sulit tahu
+produk mana yang benar-benar menguntungkan.
+
+Scentra menghitung laba per produk, per marketplace, dan per periode dari transaksi
+yang dimasukkan manual atau diimpor dari berkas CSV. Dua aturan menentukan rancangannya:
+
+- **Data kosong bukan nol.** Transaksi yang modal produknya atau tarif potongannya belum
+  dicatat tidak dihitung labanya, ditandai *belum lengkap*, dan dikeluarkan dari total.
+  Menganggapnya nol akan membuat produk terlihat jauh lebih untung daripada kenyataannya.
+- **Angka harus dapat ditelusuri.** Setiap baris ringkasan bisa dibuka sampai ke
+  transaksi aslinya, lengkap dengan rincian penjualan bersih, komisi, voucher, ongkir,
+  dan modal. Jumlah rincian selalu sama dengan ringkasannya.
+
+Laporan ini hanya dapat dibuka **supervisor dan pemilik usaha**; CS tidak melihat margin.
 
 ---
 
@@ -179,15 +201,26 @@ cd backend
 python -m pytest -q                          # Linux/macOS
 ```
 
-**39 pengujian, seluruhnya lulus.** Tidak memerlukan PostgreSQL — pengujian API memakai
+**77 pengujian, seluruhnya lulus.** Tidak memerlukan PostgreSQL — pengujian API memakai
 SQLite sementara.
+
+Masalah 1 — layanan pelanggan:
 
 - `tests/test_nlp.py` — skenario TC-01 … TC-07 dari PRD, pencocokan varian, dan jaminan
   bahwa balasan tidak pernah mengklaim stok yang tidak diketahui.
 - `tests/test_api.py` — acceptance criteria AC-01, AC-02, AC-03, AC-07, AC-09, AC-10,
   ditambah hak akses, validasi, catatan internal, dan audit log.
 
-Pemetaan skenario studi kasus:
+Masalah 2 — profitabilitas:
+
+- `tests/test_profit.py` — laba dicocokkan dengan hitungan acuan yang ditulis manual di
+  komentar, perilaku retur sebagian dan retur penuh, serta jaminan modal tidak dibebankan
+  dua kali. Juga memastikan nol eksplisit berbeda dari data yang belum dicatat.
+- `tests/test_profit_api.py` — hak akses (CS ditolak), konsistensi total per marketplace
+  terhadap keseluruhan, penelusuran ringkasan ke rincian transaksi, penolakan transaksi
+  ganda, dan impor CSV dengan baris bermasalah.
+
+Pemetaan skenario studi kasus — Masalah 1:
 
 | ID      | Input                                   | Kondisi KB                | Hasil yang diuji                       |
 | ------- | --------------------------------------- | ------------------------- | -------------------------------------- |
@@ -204,18 +237,69 @@ Pemetaan skenario studi kasus:
 | TC-09   | Dua pelanggan bernama sama              | Referensi berbeda         | Tetap dua percakapan terpisah          |
 | TC-10   | Suggested reply disalin                 | —                         | Status tidak berubah jadi resolved     |
 
+Pemetaan skenario studi kasus — Masalah 2:
+
+| Skenario                                   | Hasil yang diuji                                             |
+| ------------------------------------------ | ------------------------------------------------------------ |
+| Transaksi normal                            | Laba cocok dengan hitungan acuan manual                       |
+| Retur sebagian (1 dari 2 unit)              | Penjualan dan modal berkurang sekali, tidak dua kali          |
+| Retur penuh                                 | Rugi hanya sebesar voucher + ongkir, modal tidak dibebankan   |
+| Modal produk belum dicatat                  | Laba `null`, margin `null`, ditandai belum lengkap            |
+| Tarif potongan marketplace belum dicatat    | Laba `null`, bukan 0%                                         |
+| Voucher ditulis 0 vs dikosongkan            | 0 dihitung sebagai nol; kosong ditandai belum lengkap         |
+| Penjumlahan per marketplace                 | Totalnya sama persis dengan total keseluruhan                 |
+| Ringkasan produk vs rincian transaksi       | Jumlah laba rincian sama dengan ringkasan                     |
+| Transaksi diunggah dua kali                 | Ditolak, mencegah satu pesanan terhitung ganda                |
+| Retur melebihi penjualan                    | Ditolak dengan pesan jelas                                    |
+| CSV dengan baris bermasalah                 | Baris sah tetap tersimpan, baris gagal dilaporkan satu per satu |
+| CS membuka laporan margin                   | Ditolak 403                                                   |
+
 ---
 
 ## 5. Data uji
 
 Data sintetis di `backend/app/seed.py`: 4 pengguna, 12 percakapan, 4 produk
-(9 varian), 4 FAQ, dan aturan pengiriman tiga marketplace.
+(9 varian), 4 FAQ, aturan pengiriman tiga marketplace, serta **16 transaksi** dengan
+modal produk dan tarif potongan marketplace.
 
-Tiga kondisi sengaja dibuat tidak lengkap untuk memperlihatkan perilaku eskalasi:
+Kondisi yang sengaja dibuat tidak lengkap, untuk memperlihatkan perilaku eskalasi dan
+penandaan data belum lengkap:
 
-- **Kurma Ajwa 250 g** — stok belum pernah tercatat.
-- **Kacang Arab 500 g** — stok terakhir diperbarui 90 jam lalu (kedaluwarsa).
-- **Lazada** — aturan pengiriman kosong.
+| Yang dikosongkan                    | Akibat yang terlihat                                      |
+| ----------------------------------- | ---------------------------------------------------------- |
+| Stok **Kurma Ajwa 250 g**           | Suggested reply minta verifikasi, tanpa klaim               |
+| Stok **Kacang Arab 500 g** (90 jam) | Ditandai kedaluwarsa, minta konfirmasi                      |
+| Aturan pengiriman **Lazada**        | Pertanyaan pengiriman dieskalasi                            |
+| Modal **Cokelat Turki**             | Labanya tidak dihitung, ditandai belum lengkap (bukan nol)  |
+| Tarif potongan **Lazada**           | Seluruh transaksi Lazada belum bisa dihitung labanya        |
+| Voucher/ongkir dua transaksi        | Transaksi ditandai belum lengkap                            |
+
+Dari 16 transaksi, 9 lengkap dan 7 belum lengkap, sehingga perilaku "data kosong bukan
+nol" langsung terlihat saat demo tanpa perlu menyiapkan apa pun.
+
+### Format CSV impor
+
+```
+external_id,marketplace_code,sku,order_date,quantity,gross_sales,voucher_seller,shipping_borne_by_seller,returned_quantity,returned_amount
+SP-90001,shopee,AJW-1000,2026-11-01,2,400000,10000,15000,0,0
+LZ-90002,lazada,KCA-500,2026-11-02,1,95000,,,0,0
+```
+
+Sel kosong pada kolom biaya berarti **belum diketahui**, dan dicatat sebagai belum
+lengkap — bukan nol. Enam kolom pertama wajib ada.
+
+### Rumus laba
+
+```
+penjualan bersih = gross_sales - returned_amount
+komisi           = penjualan bersih x (komisi% + biaya layanan%)
+modal            = modal per unit x (quantity - returned_quantity)
+laba             = penjualan bersih - komisi - voucher - ongkir - modal
+```
+
+Nilai retur dikurangkan sekali dari penjualan. Barang yang diretur kembali ke stok,
+sehingga modalnya ikut berkurang dan tidak dibebankan lagi. Komisi dihitung dari
+penjualan bersih karena marketplace mengembalikan komisi atas pesanan yang diretur.
 
 ---
 
@@ -229,17 +313,20 @@ backend/
     models.py      tabel sesuai PRD bab 11
     schemas.py     validasi request/response
     auth.py        PBKDF2 password hashing, JWT, RBAC
-    nlp.py         classify() dan suggest() — fungsi murni, tanpa database
+    nlp.py         Masalah 1: classify() dan suggest() — fungsi murni, tanpa database
+    profit.py      Masalah 2: perhitungan laba — fungsi murni, tanpa database
     services.py    jembatan database ↔ nlp, audit log
-    routes.py      seluruh endpoint /api
+    routes.py      endpoint /api untuk inbox dan knowledge base
+    profit_routes.py  endpoint /api/profit, termasuk impor CSV
     seed.py        data sintetis
-  tests/           39 pengujian
+  tests/           77 pengujian
 frontend/
   src/app/
     login/                    halaman masuk
     (app)/layout.tsx          sidebar + topbar
     (app)/dashboard/          ringkasan operasional
     (app)/inbox/              unified inbox, detail, form tambah
+    (app)/profitability/      laba per produk, marketplace, dan transaksi
     (app)/knowledge/          FAQ, produk/stok, pengiriman, eskalasi
   src/lib/api.ts              klien REST
   src/lib/ui.tsx              komponen dan token tampilan
@@ -267,11 +354,14 @@ Seluruh klasifikasi berjalan lokal dengan aturan di `nlp.py`.
 
 Disebutkan terbuka, bukan disembunyikan:
 
-- **Masalah 2 studi kasus** (profitabilitas per produk/marketplace) belum dibuat.
 - Halaman manajemen pengguna dan form CRUD knowledge base belum ada; knowledge base
   masih tampil baca-saja dan diisi lewat `seed.py`.
 - Belum ada migrasi database (Alembic); skema dibuat dengan `create_all` saat startup.
 - Pengujian UI otomatis (Playwright) belum ada; alur UI diuji manual.
+- Modal produk dan tarif potongan marketplace belum bisa disunting dari antarmuka;
+  keduanya tampil baca-saja dan diisi lewat `seed.py` atau langsung ke database.
+- Impor CSV belum mendukung pembaruan transaksi yang sudah ada; unggahan ulang untuk
+  pesanan yang sama ditolak agar tidak terhitung dua kali.
 - Prototipe diverifikasi end-to-end di atas SQLite. Jalur PostgreSQL disediakan lewat
   `docker-compose.yml` dengan kode yang sama (SQLModel), tetapi belum dijalankan penulis
   pada mesin uji karena Docker tidak aktif saat pengembangan.
@@ -280,14 +370,22 @@ Disebutkan terbuka, bukan disembunyikan:
 
 ## 9. Catatan penggunaan AI
 
-Sesuai ketentuan Guidebook COMPARE 2026:
+Guidebook COMPARE 2026 meminta catatan alat bantu yang memuat nama alat, tujuan,
+bagian yang digunakan, perubahan oleh tim, dan cara memeriksa hasilnya.
 
-| Yang disebutkan      | Penjelasan                                                                    |
-| -------------------- | ----------------------------------------------------------------------------- |
-| Alat dan kegunaan    | Claude (Anthropic) membantu penyusunan rancangan, penulisan kode, dan dokumentasi. |
-| Bagian yang digunakan| Kerangka backend/frontend, aturan klasifikasi awal, penulisan pengujian, README. |
-| Pemeriksaan tim      | Seluruh kode dibaca dan dijalankan tim; aturan klasifikasi dan isi knowledge base disesuaikan dengan studi kasus, lalu diverifikasi lewat 39 pengujian otomatis. |
-| Hak dan biaya        | Tidak memakai layanan AI berbayar di dalam produk. Produk berjalan tanpa kuota pihak ketiga. |
+> **Diisi tim sebelum pengumpulan.** Tabel di bawah menyediakan kerangkanya; nama alat
+> dan rincian pemeriksaan diisi sesuai yang benar-benar dilakukan tim.
+
+| Yang disebutkan       | Penjelasan                                                                     |
+| --------------------- | ------------------------------------------------------------------------------ |
+| Alat dan kegunaan     | _(diisi tim)_                                                                   |
+| Bagian yang digunakan | _(diisi tim)_                                                                   |
+| Pemeriksaan tim       | _(diisi tim)_                                                                   |
+| Hak dan biaya         | Tidak memakai layanan AI berbayar di dalam produk. Produk berjalan tanpa kuota pihak ketiga. |
+
+Produk itu sendiri **tidak memanggil layanan AI apa pun saat berjalan**. Seluruh
+klasifikasi dan perhitungan margin dilakukan oleh aturan di `backend/app/nlp.py` dan
+`backend/app/profit.py`, sehingga hasilnya dapat ditelusuri baris per baris.
 
 ---
 

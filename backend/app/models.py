@@ -159,3 +159,55 @@ class ConversationEvent(SQLModel, table=True):
     new_value: Optional[str] = None
     detail: Optional[str] = None
     created_at: datetime = Field(default_factory=utcnow)
+
+
+# --- Masalah 2: profitabilitas produk ---------------------------------------
+# Seluruh nilai uang disimpan sebagai bilangan bulat rupiah supaya tidak ada
+# galat pembulatan float. Kolom yang boleh None berarti "belum diketahui",
+# BUKAN nol (aturan studi kasus: data kosong tidak boleh dianggap nol).
+
+
+class ProductCost(SQLModel, table=True):
+    """Modal (HPP) per varian. Varian tanpa baris di sini = modal belum dicatat,
+    sehingga marginnya tidak dihitung dan ditandai belum lengkap."""
+    __tablename__ = "product_costs"
+    __table_args__ = (UniqueConstraint("variant_id"),)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    variant_id: int = Field(foreign_key="product_variants.id", index=True)
+    unit_cost: int
+    effective_from: Optional[datetime] = None
+    updated_at: datetime = Field(default_factory=utcnow)
+    updated_by: Optional[int] = Field(default=None, foreign_key="users.id")
+
+
+class MarketplaceFee(SQLModel, table=True):
+    """Potongan marketplace dalam basis poin (1% = 100 bp) agar tetap bilangan bulat."""
+    __tablename__ = "marketplace_fees"
+    __table_args__ = (UniqueConstraint("marketplace_code"),)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    marketplace_code: str = Field(index=True)
+    commission_bp: Optional[int] = None       # None = tarif belum dicatat
+    service_fee_bp: Optional[int] = None
+    effective_from: Optional[datetime] = None
+    updated_at: datetime = Field(default_factory=utcnow)
+    updated_by: Optional[int] = Field(default=None, foreign_key="users.id")
+
+
+class Transaction(SQLModel, table=True):
+    """Satu baris penjualan yang dimasukkan manual atau lewat impor CSV."""
+    __tablename__ = "transactions"
+    __table_args__ = (UniqueConstraint("marketplace_code", "external_id"),)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    external_id: str = Field(index=True)       # nomor pesanan di marketplace
+    marketplace_code: str = Field(index=True)
+    variant_id: int = Field(foreign_key="product_variants.id", index=True)
+    order_date: datetime = Field(index=True)
+    quantity: int
+    gross_sales: int                            # penjualan kotor, rupiah
+    voucher_seller: Optional[int] = None        # diskon yang ditanggung penjual
+    shipping_borne_by_seller: Optional[int] = None
+    returned_quantity: int = Field(default=0)
+    returned_amount: int = Field(default=0)
+    source: str = Field(default="manual")       # manual | import
+    created_at: datetime = Field(default_factory=utcnow)
+    created_by: Optional[int] = Field(default=None, foreign_key="users.id")

@@ -246,3 +246,116 @@ export const api = {
       marketplaces: { code: string; name: string }[];
     }>("/api/knowledge"),
 };
+
+/* ---------------------------------------------------------------------------
+   Masalah 2 — profitabilitas produk
+   Nilai uang berupa bilangan bulat rupiah. Field bernilai null berarti
+   "belum diketahui", bukan nol.
+--------------------------------------------------------------------------- */
+
+export interface ProfitBucket {
+  key: string;
+  label: string;
+  transactions: number;
+  complete_transactions: number;
+  incomplete_transactions: number;
+  complete: boolean;
+  units_sold: number;
+  units_returned: number;
+  gross_sales: number;
+  returned_amount: number;
+  net_sales: number;
+  net_sales_complete: number;
+  commission: number;
+  voucher: number;
+  shipping: number;
+  cogs: number;
+  profit: number;
+  margin_pct: number | null;
+  missing_reasons: string[];
+}
+
+export interface ProfitReport {
+  period: { start: string | null; end: string | null; marketplace: string | null };
+  overall: ProfitBucket;
+  by_product: ProfitBucket[];
+  by_marketplace: ProfitBucket[];
+  data_complete: boolean;
+  note: string;
+}
+
+export interface ProfitTransaction {
+  id: number;
+  external_id: string;
+  marketplace_code: string;
+  product_label: string;
+  sku: string;
+  order_date: string;
+  quantity: number;
+  returned_quantity: number;
+  gross_sales: number;
+  returned_amount: number;
+  net_sales: number;
+  commission: number | null;
+  voucher: number | null;
+  shipping: number | null;
+  cogs: number | null;
+  profit: number | null;
+  margin_pct: number | null;
+  complete: boolean;
+  missing: string[];
+}
+
+export interface CostSettings {
+  product_costs: {
+    variant_id: number;
+    sku: string;
+    product_name: string;
+    variant_name: string;
+    unit_cost: number | null;
+    updated_at: string | null;
+  }[];
+  marketplace_fees: {
+    marketplace_code: string;
+    commission_bp: number | null;
+    service_fee_bp: number | null;
+    updated_at: string | null;
+  }[];
+}
+
+function profitQuery(params: Record<string, string | number | boolean | undefined>) {
+  const q = new URLSearchParams();
+  for (const [k, v] of Object.entries(params)) {
+    if (v !== undefined && v !== "" && v !== false) q.set(k, String(v));
+  }
+  const qs = q.toString();
+  return qs ? `?${qs}` : "";
+}
+
+export const profitApi = {
+  report: (params: { start?: string; marketplace?: string }) =>
+    request<ProfitReport>(`/api/profit/report${profitQuery(params)}`),
+
+  transactions: (params: {
+    start?: string;
+    marketplace?: string;
+    sku?: string;
+    only_incomplete?: boolean;
+  }) => request<ProfitTransaction[]>(`/api/profit/transactions${profitQuery(params)}`),
+
+  costSettings: () => request<CostSettings>("/api/profit/cost-settings"),
+
+  async importCsv(file: File) {
+    const form = new FormData();
+    form.append("file", file);
+    const token = getToken();
+    const res = await fetch(`${BASE}/api/profit/transactions/import`, {
+      method: "POST",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: form,
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw new ApiError(body.detail ?? "Impor gagal.", res.status);
+    return body as { saved: number; failed: number; errors: string[] };
+  },
+};

@@ -134,3 +134,15 @@ export function Field({
 
 export const inputClass =
   "focus-ring w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm outline-none transition placeholder:text-faint";
+
+/** Rupiah bulat. Nilai null berarti belum diketahui, dan TIDAK ditulis sebagai 0. */
+export function rupiah(value: number | null | undefined): string {
+  if (value === null || value === undefined) return "—";
+  const sign = value < 0 ? "-" : "";
+  return `${sign}Rp${Math.abs(value).toLocaleString("id-ID")}`;
+}
+
+export function persen(value: number | null | undefined): string {
+  if (value === null || value === undefined) return "—";
+  return `${value.toFixed(1)}%`;
+}
