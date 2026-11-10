@@ -1,0 +1,4 @@
+tests/
+*.db
+.venv/
+__pycache__/

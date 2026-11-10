@@ -74,6 +74,47 @@ cp .env.example .env.local          # NEXT_PUBLIC_API_URL=http://localhost:8000
 npm run dev
 ```
 
+### Deploy ke Vercel
+
+Repositori ini berisi dua aplikasi, jadi dibuat **dua proyek Vercel dari repo yang
+sama**, dibedakan lewat *Root Directory*. Database memakai Postgres terkelola
+karena fungsi serverless tidak punya penyimpanan tetap — berkas SQLite akan hilang
+setiap fungsi dimatikan.
+
+**1. Buat database.** Di dasbor Vercel: **Storage → Create Database → Neon
+(Postgres)**. Salin nilai `DATABASE_URL` yang diberikan.
+
+**2. Isi data sintetis dari komputer sendiri** (sekali saja; perintah ini juga yang
+membuat seluruh tabel):
+
+```bash
+cd backend
+DATABASE_URL="<DATABASE_URL dari langkah 1>" python -m app.seed
+```
+
+**3. Deploy API.** **Add New → Project →** pilih repo ini → **Root Directory:
+`backend`** → tambahkan *Environment Variables*:
+
+| Nama           | Nilai                                                      |
+| -------------- | ---------------------------------------------------------- |
+| `DATABASE_URL` | dari langkah 1                                             |
+| `SECRET_KEY`   | teks acak panjang, mis. hasil `openssl rand -hex 32`       |
+| `CORS_ORIGINS` | sementara isi `http://localhost:3000`, diperbaiki di bawah |
+
+Setelah deploy, catat alamatnya, lalu pastikan
+`https://<api>.vercel.app/api/health` membalas `{"status":"ok"}`.
+
+**4. Deploy frontend.** **Add New → Project →** repo yang sama → **Root Directory:
+`frontend`** → *Environment Variable* `NEXT_PUBLIC_API_URL` =
+`https://<api>.vercel.app` (tanpa garis miring di akhir).
+
+**5. Tutup CORS.** Kembali ke proyek API, ubah `CORS_ORIGINS` menjadi alamat
+frontend (`https://<frontend>.vercel.app`) lalu **Redeploy**. Tanpa langkah ini
+browser menolak seluruh permintaan dari frontend.
+
+Catatan: `NEXT_PUBLIC_API_URL` ditanam saat *build*, bukan dibaca saat aplikasi
+jalan, jadi setiap kali nilainya berubah frontend harus di-*redeploy*.
+
 ### Akun demo
 
 Seluruhnya data sintetis. Tidak ada data pelanggan nyata maupun kredensial toko.
@@ -201,7 +242,7 @@ cd backend
 python -m pytest -q                          # Linux/macOS
 ```
 
-**77 pengujian, seluruhnya lulus.** Tidak memerlukan PostgreSQL — pengujian API memakai
+**78 pengujian, seluruhnya lulus.** Tidak memerlukan PostgreSQL — pengujian API memakai
 SQLite sementara.
 
 Masalah 1 — layanan pelanggan:
@@ -319,7 +360,9 @@ backend/
     routes.py      endpoint /api untuk inbox dan knowledge base
     profit_routes.py  endpoint /api/profit, termasuk impor CSV
     seed.py        data sintetis
-  tests/           77 pengujian
+  api/index.py     titik masuk Vercel (serverless)
+  vercel.json      seluruh path diteruskan ke api/index
+  tests/           78 pengujian
 frontend/
   src/app/
     login/                    halaman masuk

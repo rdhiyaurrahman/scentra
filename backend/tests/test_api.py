@@ -256,3 +256,12 @@ def test_dashboard_menyertakan_disclaimer(client, cs):
     body = client.get("/api/dashboard", headers=cs).json()
     assert body["totals"]["conversations"] > 0
     assert "dicatat ke Scentra" in body["disclaimer"]
+
+
+def test_url_database_penyedia_cloud_dapat_nama_driver():
+    """Neon/Vercel memberi "postgres://"; SQLAlchemy menolaknya tanpa driver."""
+    from app.db import normalize_db_url
+
+    assert normalize_db_url("postgres://u:p@host/db") == "postgresql+psycopg://u:p@host/db"
+    assert normalize_db_url("postgresql://u:p@host/db") == "postgresql+psycopg://u:p@host/db"
+    assert normalize_db_url("sqlite:///./x.db") == "sqlite:///./x.db"
