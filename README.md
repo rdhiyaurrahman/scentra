@@ -93,7 +93,9 @@ DATABASE_URL="<DATABASE_URL dari langkah 1>" python -m app.seed
 ```
 
 **3. Deploy API.** **Add New → Project →** pilih repo ini → **Root Directory:
-`backend`** → tambahkan *Environment Variables*:
+`backend`**. Vercel mengenali FastAPI sendiri lewat `app/main.py`, jadi
+*Build and Output Settings* dibiarkan apa adanya. Tambahkan *Environment
+Variables*:
 
 | Nama           | Nilai                                                      |
 | -------------- | ---------------------------------------------------------- |
@@ -360,8 +362,6 @@ backend/
     routes.py      endpoint /api untuk inbox dan knowledge base
     profit_routes.py  endpoint /api/profit, termasuk impor CSV
     seed.py        data sintetis
-  api/index.py     titik masuk Vercel (serverless)
-  vercel.json      seluruh path diteruskan ke api/index
   tests/           78 pengujian
 frontend/
   src/app/
