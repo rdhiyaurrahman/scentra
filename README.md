@@ -16,9 +16,25 @@ pada studi kasus COMPARE 2026:
 Dibuat untuk **COMPARE 2026 — Business Case Hackathon**, studi kasus
 "Layanan Pelanggan dan Profitabilitas Produk pada Usaha Oleh-Oleh Haji".
 
+Kebutuhan produk, aturan bisnis, model data, dan acceptance criteria ada di
+[PRD.md](PRD.md). Cara memakai aplikasinya ada di bab 2.
+
 ---
 
 ## 1. Cara menjalankan
+
+### Demo daring
+
+Versi yang sudah ter-deploy, siap dibuka tanpa memasang apa pun:
+
+| | Alamat |
+| --- | --- |
+| Aplikasi | https://scentra-khph.vercel.app |
+| API | https://scentra-pi.vercel.app |
+| Dokumentasi API (Swagger) | https://scentra-pi.vercel.app/docs |
+
+Akun demo ada di akhir bab ini. Permintaan pertama setelah beberapa menit menganggur bisa
+butuh beberapa detik karena fungsi serverless-nya tidur saat tidak dipakai.
 
 ### Cara tercepat — Docker (disarankan)
 
@@ -130,7 +146,135 @@ Seluruhnya data sintetis. Tidak ada data pelanggan nyata maupun kredensial toko.
 
 ---
 
-## 2. Masalah yang dibantu
+## 2. Panduan pemakaian
+
+Yang dibuka tiap peran berbeda. CS menghabiskan waktunya di Unified Inbox, supervisor
+membagi pekerjaan dan sesekali melihat margin, pemilik hampir hanya membuka
+Profitabilitas.
+
+Untuk mencoba seluruh aplikasi dengan satu akun, masuk sebagai Rina (supervisor). Dia
+bisa melakukan semua yang CS bisa, ditambah membuka laporan laba.
+
+### Menangani satu chat, dari awal sampai selesai
+
+Peran: CS.
+
+**1. Salin pesan pembeli dari Seller Center.** Scentra tidak menarik chat sendiri, jadi
+pesannya disalin manual.
+
+**2. Buka Unified Inbox, klik "+ Tambah percakapan".** Isi marketplace, nama pembeli,
+nomor pesanan atau chat, produk yang ditanyakan bila sudah jelas, lalu tempel isi
+pesannya. Marketplace, nama, dan isi pesan wajib diisi.
+
+Kalau nomor pesanan itu sudah pernah dicatat, Scentra memperingatkan dan menawarkan
+menggabungkan pesan ke percakapan yang sudah ada. Terima tawaran itu, supaya satu pembeli
+tidak terpecah jadi dua antrean. Dua pembeli bernama sama tidak pernah digabung, karena
+yang dipakai sebagai pengenal adalah nomornya.
+
+**3. Klik "Simpan pesan".** Scentra langsung memberi label intent dan prioritas, lalu
+menyusun rekomendasi balasan.
+
+**4. Baca rekomendasinya beserta sumbernya.** Di bawah teks balasan ada chip kecil
+seperti `STOK · 1 kg · 24 pcs · 3 jam lalu` atau `FAQ · Apakah produk bersertifikat
+halal?`. Chip itu memberi tahu dari mana kalimatnya berasal. Kalau tidak ada chip yang
+mendukung sebuah pernyataan, jangan kirim pernyataan itu.
+
+**5. Sunting bila perlu, lalu klik "Salin teks".** Teksnya masuk ke papan klip. Status
+percakapan sengaja tidak berubah, karena menyalin belum berarti terkirim.
+
+**6. Tempel balasannya di Seller Center dan kirim dari sana.**
+
+**7. Kembali ke Scentra, catat tindakannya, lalu ubah statusnya.** Misalnya tulis
+"balasan dikirim lewat Seller Center", lalu ubah status jadi Waiting for Customer atau
+Resolved. Semua perubahan ini masuk ke riwayat aktivitas di bagian bawah halaman.
+
+### Kalau rekomendasinya ditandai perlu verifikasi
+
+Artinya Scentra tidak punya data yang cukup, jadi dia sengaja tidak menjanjikan apa pun.
+Alasannya tertulis di sebelah penandanya. Tiga yang paling sering muncul:
+
+Stok varian itu belum pernah dicatat, jadi Scentra tidak menyatakan tersedia maupun
+habis. Cek stok fisik dulu, baru balas.
+
+Stok tercatat tapi umurnya lebih dari 48 jam. Angkanya ditampilkan, tapi balasannya
+meminta konfirmasi dulu karena bisa saja sudah berubah.
+
+Aturan pengiriman marketplace itu belum diisi, misalnya cutoff Lazada. Pertanyaan
+pengiriman diarahkan ke supervisor.
+
+Penandaan ini bisa dipakai sebagai filter di daftar percakapan, supaya yang butuh
+pengecekan manusia bisa dikumpulkan sekaligus.
+
+### Kalau labelnya salah
+
+Pada panel Klasifikasi, pilih intent yang benar. Rekomendasi balasannya langsung disusun
+ulang, dan koreksinya tersimpan beserta nama yang mengoreksi. Catatan itu yang nanti
+dipakai mengukur seberapa sering aturannya meleset.
+
+### Yang dikerjakan supervisor
+
+Menugaskan percakapan ke anggota tim lewat panel Status di halaman detail. Hanya
+supervisor yang bisa, dan setiap penugasan tercatat di riwayat.
+
+Menyaring antrean menurut marketplace, status, atau penandaan perlu verifikasi, untuk
+melihat mana yang menumpuk. Kotak pencarian menerima nama, nomor pesanan, maupun potongan
+isi pesan.
+
+### Membaca laporan profitabilitas
+
+Peran: supervisor dan pemilik. Menu ini tidak muncul bagi CS.
+
+Di atas ada filter periode (30 hari, 90 hari, atau semua) dan filter marketplace. Di
+bawahnya lima kartu: penjualan bersih, total biaya, laba, margin, dan jumlah transaksi
+yang datanya belum lengkap.
+
+Empat tab di bawahnya:
+
+**Per produk** memperlihatkan produk mana yang menyumbang laba. Ini tab yang menjawab
+pertanyaan Husin. Klik nama produk untuk langsung melihat transaksi penyusunnya.
+
+**Per marketplace** membandingkan Shopee, TikTok Shop, dan Lazada setelah potongan
+masing-masing.
+
+**Rincian transaksi** menampilkan satu baris per pesanan, lengkap dengan komisi, voucher,
+ongkir, dan modalnya. Jumlah kolom laba di sini selalu sama dengan angka di ringkasan.
+
+**Modal & tarif** memperlihatkan modal per varian dan tarif potongan tiap marketplace,
+termasuk mana yang belum diisi.
+
+Dua tanda yang perlu dibaca benar. Tanda hubung berarti nilainya belum dicatat, bukan nol.
+Tulisan "belum bisa dihitung" berarti ada komponen biaya yang hilang, sehingga baris itu
+dikeluarkan dari total supaya tidak membuat produknya terlihat lebih untung daripada
+kenyataannya.
+
+Pada data demo, Cokelat Turki sengaja dibiarkan tanpa modal dan Lazada tanpa tarif
+potongan, supaya perilaku ini langsung terlihat.
+
+### Memasukkan data penjualan baru
+
+Klik "Impor CSV" di halaman Profitabilitas. Format kolomnya ada di bab 6.
+
+Sel yang dikosongkan pada kolom biaya berarti belum diketahui, dan barisnya ditandai belum
+lengkap. Kalau voucher memang nol, tulis `0`, jangan dikosongkan. Dua hal itu diperlakukan
+berbeda dan memang disengaja.
+
+Baris yang bermasalah tidak menggagalkan seluruh berkas. Yang sah tetap tersimpan, dan
+yang gagal dilaporkan satu per satu beserta alasannya. Pesanan yang nomornya sudah pernah
+masuk akan ditolak, supaya satu penjualan tidak terhitung dua kali.
+
+### Knowledge base
+
+Halaman ini baca-saja untuk sekarang. Isinya FAQ, katalog produk beserta stok dan kapan
+terakhir diperbarui, aturan pengiriman tiap marketplace, dan aturan eskalasi. Dari sinilah
+rekomendasi balasan mengambil bahan, jadi kualitas jawabannya mengikuti kelengkapan
+halaman ini.
+
+Penambahan dan penyuntingan isinya masih lewat `backend/app/seed.py`. Form penyuntingannya
+belum dibuat, dan itu tercatat di bab 9.
+
+---
+
+## 3. Masalah yang dibantu
 
 ### Masalah 1 — pertanyaan berulang di chat
 
@@ -166,7 +310,7 @@ Laporan ini hanya dapat dibuka **supervisor dan pemilik usaha**; CS tidak meliha
 
 ---
 
-## 3. Cara kerja produk
+## 4. Cara kerja produk
 
 ```
 ┌──────────────┐   pesan disalin    ┌─────────────────────────────────────┐
@@ -236,7 +380,7 @@ Setiap rekomendasi menampilkan **sumbernya** sebagai chip, misalnya
 
 ---
 
-## 4. Pengujian
+## 5. Pengujian
 
 ```bash
 cd backend
@@ -299,7 +443,7 @@ Pemetaan skenario studi kasus — Masalah 2:
 
 ---
 
-## 5. Data uji
+## 6. Data uji
 
 Data sintetis di `backend/app/seed.py`: 4 pengguna, 12 percakapan, 4 produk
 (9 varian), 4 FAQ, aturan pengiriman tiga marketplace, serta **16 transaksi** dengan
@@ -346,7 +490,7 @@ penjualan bersih karena marketplace mengembalikan komisi atas pesanan yang diret
 
 ---
 
-## 6. Susunan berkas
+## 7. Susunan berkas
 
 ```
 backend/
@@ -374,11 +518,12 @@ frontend/
   src/lib/api.ts              klien REST
   src/lib/ui.tsx              komponen dan token tampilan
 docker-compose.yml
+PRD.md             kebutuhan produk, acceptance criteria, model data
 ```
 
 ---
 
-## 7. Teknologi
+## 8. Teknologi
 
 | Lapisan  | Teknologi                              |
 | -------- | -------------------------------------- |
@@ -393,7 +538,7 @@ Seluruh klasifikasi berjalan lokal dengan aturan di `nlp.py`.
 
 ---
 
-## 8. Yang belum dikerjakan
+## 9. Yang belum dikerjakan
 
 Disebutkan terbuka, bukan disembunyikan:
 
@@ -411,7 +556,7 @@ Disebutkan terbuka, bukan disembunyikan:
 
 ---
 
-## 9. Catatan penggunaan AI
+## 10. Catatan penggunaan AI
 
 Guidebook COMPARE 2026 meminta catatan alat bantu yang memuat nama alat, tujuan,
 bagian yang digunakan, perubahan oleh tim, dan cara memeriksa hasilnya.
@@ -432,7 +577,7 @@ klasifikasi dan perhitungan margin dilakukan oleh aturan di `backend/app/nlp.py`
 
 ---
 
-## 10. Privasi
+## 11. Privasi
 
 Seluruh nama, nomor pesanan, dan angka pada data uji dibuat sendiri dan tidak mewakili
 pelanggan, harga, atau transaksi nyata. Scentra tidak menyimpan password, cookie, atau
