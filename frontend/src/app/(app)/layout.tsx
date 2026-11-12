@@ -81,10 +81,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <aside className="sticky top-0 hidden h-screen w-[232px] flex-none flex-col border-r border-line bg-white px-3.5 py-5 lg:flex">
           <div className="mb-7 flex items-center gap-2.5 px-2">
             <span className="grid h-9 w-9 place-items-center rounded-[12px] bg-accent text-sm font-bold text-white">
-              S
+              R
             </span>
             <span className="leading-tight">
-              <span className="block text-[14px] font-bold tracking-tight">Scentra</span>
+              <span className="block text-[14px] font-bold tracking-tight">ResponIn</span>
               <span className="block text-[10.5px] text-faint">Manual Unified Inbox</span>
             </span>
           </div>
@@ -124,7 +124,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
           <div className="rounded-2xl bg-[#f6f7fc] p-3.5 text-[11px] leading-relaxed text-muted">
             <p className="mb-1 font-semibold text-ink">Tanpa API marketplace</p>
-            Pesan dicatat manual. Balasan dikirim lewat Seller Center, bukan dari Scentra.
+            Pesan dicatat manual. Balasan dikirim lewat Seller Center, bukan dari ResponIn.
           </div>
         </aside>
 
@@ -132,7 +132,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <header className="sticky top-0 z-30 flex items-center gap-4 border-b border-line bg-white/85 px-5 py-3 backdrop-blur-md sm:px-7">
             <div className="lg:hidden">
               <span className="grid h-8 w-8 place-items-center rounded-[10px] bg-accent text-xs font-bold text-white">
-                S
+                R
               </span>
             </div>
             <div className="hidden sm:block">

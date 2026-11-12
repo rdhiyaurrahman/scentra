@@ -201,7 +201,7 @@ export function ConversationPane({
               <div>
                 <h3 className="text-[15px] font-bold tracking-tight">Suggested reply</h3>
                 <p className="mt-0.5 text-xs text-muted">
-                  Rekomendasi internal. Scentra tidak mengirim pesan ke marketplace.
+                  Rekomendasi internal. ResponIn tidak mengirim pesan ke marketplace.
                 </p>
               </div>
               <Pill tone={reply.copied_at ? "sky" : "slate"}>
@@ -248,7 +248,7 @@ export function ConversationPane({
                       `Balasan dikirim melalui Seller Center ${mp.name}.`,
                     );
                     await onChanged(
-                      "Tindakan dicatat. Scentra tidak memverifikasi pengiriman di marketplace.",
+                      "Tindakan dicatat. ResponIn tidak memverifikasi pengiriman di marketplace.",
                     );
                   })
                 }
@@ -315,7 +315,7 @@ export function ConversationPane({
           </label>
 
           <p className="rounded-xl bg-[#f7f8fc] px-3 py-2.5 text-[11px] leading-relaxed text-muted">
-            Status di Scentra adalah pencatatan internal, bukan bukti bahwa pesan sudah
+            Status di ResponIn adalah pencatatan internal, bukan bukti bahwa pesan sudah
             terkirim atau masalah selesai di marketplace.
           </p>
         </div>

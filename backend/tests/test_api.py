@@ -264,7 +264,7 @@ def test_knowledge_base_menandai_stok_belum_tercatat(client, cs):
 def test_dashboard_menyertakan_disclaimer(client, cs):
     body = client.get("/api/dashboard", headers=cs).json()
     assert body["totals"]["conversations"] > 0
-    assert "dicatat ke Scentra" in body["disclaimer"]
+    assert "dicatat ke ResponIn" in body["disclaimer"]
 
 
 def test_url_database_penyedia_cloud_dapat_nama_driver():

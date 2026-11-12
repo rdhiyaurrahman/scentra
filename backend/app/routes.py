@@ -1,4 +1,4 @@
-"""Endpoint internal Scentra. Tidak ada satu pun panggilan ke API marketplace."""
+"""Endpoint internal ResponIn. Tidak ada satu pun panggilan ke API marketplace."""
 from __future__ import annotations
 
 from collections import Counter
@@ -236,7 +236,7 @@ def create_conversation(
     user: User = Depends(agent),
 ):
     """Manual capture (FR-02). Sumber input selalu `manual`; waktu capture dicatat
-    otomatis. Scentra tidak pernah mengambil pesan dari marketplace."""
+    otomatis. ResponIn tidak pernah mengambil pesan dari marketplace."""
     text = body.message_text.strip()
     if not text or not body.customer_name.strip():
         raise HTTPException(status_code=422, detail="Nama pelanggan dan isi pesan wajib diisi.")
@@ -443,7 +443,7 @@ def add_action(
     user: User = Depends(agent),
 ):
     """Catatan tindakan CS, misalnya 'balasan dikirim lewat Seller Center'.
-    Scentra tidak punya konfirmasi dari marketplace, jadi ini murni catatan
+    ResponIn tidak punya konfirmasi dari marketplace, jadi ini murni catatan
     internal (AC-08)."""
     c = session.get(Conversation, conversation_id)
     if c is None:
@@ -522,6 +522,6 @@ def dashboard(session: Session = Depends(get_session), _: User = Depends(current
         "by_intent": Counter(i["intent"] for i in items),
         "by_status": Counter(i["status"] for i in items),
         "high_priority_queue": sorted(hot, key=lambda i: i["updated_at"], reverse=True)[:8],
-        "disclaimer": ("Metrik dihitung dari pesan yang dicatat ke Scentra oleh CS, "
+        "disclaimer": ("Metrik dihitung dari pesan yang dicatat ke ResponIn oleh CS, "
                        "bukan dari seluruh percakapan di Shopee, TikTok Shop, dan Lazada."),
     }

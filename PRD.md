@@ -1,11 +1,11 @@
-# PRD — Scentra Manual Unified Inbox
+# PRD — ResponIn Manual Unified Inbox
 
 Dokumen kebutuhan produk untuk **COMPARE 2026 — Business Case Hackathon**, studi kasus
 "Layanan Pelanggan dan Profitabilitas Produk pada Usaha Oleh-Oleh Haji".
 
 | | |
 | --- | --- |
-| Produk | Scentra Manual Unified Inbox |
+| Produk | ResponIn Manual Unified Inbox |
 | Pemilik usaha | Husin, Scentra Parfume (oleh-oleh haji dan herbal) |
 | Versi dokumen | 1.0 |
 | Status | Prototipe berjalan, lihat `README.md` |
@@ -14,12 +14,12 @@ Dokumen kebutuhan produk untuk **COMPARE 2026 — Business Case Hackathon**, stu
 
 ## 1. Ringkasan
 
-Scentra adalah workspace internal untuk tim Scentra Parfume. Satu aplikasi menangani dua
+ResponIn adalah workspace internal untuk tim Scentra Parfume. Satu aplikasi menangani dua
 pekerjaan yang hari ini dikerjakan terpisah dan manual: membalas chat pembeli dari tiga
 marketplace, dan menghitung apakah sebuah produk benar-benar untung.
 
-Scentra tidak terhubung ke API marketplace mana pun. CS menyalin pesan pembeli ke
-Scentra, lalu menyalin balasannya kembali ke Seller Center. Data penjualan masuk lewat
+ResponIn tidak terhubung ke API marketplace mana pun. CS menyalin pesan pembeli ke
+ResponIn, lalu menyalin balasannya kembali ke Seller Center. Data penjualan masuk lewat
 pengisian manual atau impor berkas CSV dari laporan marketplace.
 
 Batasan itu datang dari kondisi nyata Husin: dia berjualan lewat Shopee, TikTok Shop,
@@ -64,7 +64,7 @@ pernah bertemu.
 | Angka tidak menyesatkan | Transaksi dengan data biaya belum lengkap dikeluarkan dari total, bukan dianggap nol |
 
 Yang sengaja tidak dijadikan ukuran: kecepatan balas rata-rata dan tingkat kepuasan
-pembeli. Keduanya terjadi di Seller Center, di luar jangkauan Scentra, sehingga tidak
+pembeli. Keduanya terjadi di Seller Center, di luar jangkauan ResponIn, sehingga tidak
 bisa diukur jujur dari dalam aplikasi ini.
 
 ---
@@ -74,7 +74,7 @@ bisa diukur jujur dari dalam aplikasi ini.
 ### 4.1 Customer service
 
 Staf yang setiap hari membalas chat pembeli. Di data demo ada dua, Ayu dan Bima. Mereka
-yang paling sering membuka Scentra, dan antarmuka inbox dirancang untuk mereka.
+yang paling sering membuka ResponIn, dan antarmuka inbox dirancang untuk mereka.
 
 ### 4.2 Pemilik usaha
 
@@ -118,9 +118,9 @@ Di luar lingkup, dan alasannya:
 | Yang tidak dibangun | Alasan |
 | --- | --- |
 | Integrasi API marketplace | Husin tidak punya aksesnya; syarat studi kasus |
-| Pengiriman balasan dari dalam Scentra | Tanpa API, pengiriman tetap lewat Seller Center |
+| Pengiriman balasan dari dalam ResponIn | Tanpa API, pengiriman tetap lewat Seller Center |
 | Model bahasa atau layanan AI saat aplikasi berjalan | Keputusan harus bisa dijelaskan baris per baris dan tidak bergantung kuota pihak ketiga |
-| Manajemen stok sebagai sumber kebenaran | Stok di Scentra adalah salinan catatan, bukan penggantinya |
+| Manajemen stok sebagai sumber kebenaran | Stok di ResponIn adalah salinan catatan, bukan penggantinya |
 | Pembukuan dan pajak | Laporan ini alat bantu keputusan produk, bukan laporan keuangan resmi |
 
 ---
@@ -231,7 +231,7 @@ balasan meminta konfirmasi sebelum menjanjikan apa pun.
 **BR-04 Nama bukan pengenal.** Dua pembeli bernama sama tidak pernah digabung. Pengenal
 percakapan adalah referensi pesanan atau chat.
 
-**BR-05 Scentra tidak mengirim apa pun.** Status di Scentra adalah pencatatan internal,
+**BR-05 ResponIn tidak mengirim apa pun.** Status di ResponIn adalah pencatatan internal,
 bukan bukti pesan terkirim di marketplace.
 
 **BR-06 Retur dihitung sekali.** Nilai retur dikurangkan satu kali dari penjualan. Barang
@@ -281,7 +281,7 @@ pesan akses terbatas.
 
 ### 9.1 Keamanan dan privasi data
 
-Scentra tidak pernah menyimpan password, cookie, atau token akun marketplace. Password
+ResponIn tidak pernah menyimpan password, cookie, atau token akun marketplace. Password
 pengguna disimpan sebagai hash PBKDF2-HMAC-SHA256 dengan salt acak. Token JWT
 ditandatangani dengan kunci yang dibaca dari variabel lingkungan, bukan ditulis di kode.
 Seluruh data demo bersifat sintetis dan tidak mewakili pelanggan, harga, atau transaksi
@@ -316,7 +316,7 @@ bekerja pada lebar layar ponsel.
 ## 10. Arsitektur
 
 ```
-Seller Center marketplace          (di luar Scentra)
+Seller Center marketplace          (di luar ResponIn)
         │  pesan disalin manual
         ▼
 Next.js (App Router) + Tailwind

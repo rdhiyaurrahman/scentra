@@ -1,4 +1,4 @@
-# Scentra — Manual Unified Inbox
+# ResponIn — Manual Unified Inbox
 
 Workspace internal untuk Scentra Parfume (oleh-oleh haji & herbal), menjawab dua masalah
 pada studi kasus COMPARE 2026:
@@ -9,7 +9,7 @@ pada studi kasus COMPARE 2026:
 2. **Profitabilitas produk.** Pemilik melihat laba per produk, per marketplace, dan per
    periode setelah komisi, voucher, ongkir yang ditanggung penjual, dan retur.
 
-> **Scentra tidak terhubung ke API marketplace mana pun.** Pesan dimasukkan manual oleh CS,
+> **ResponIn tidak terhubung ke API marketplace mana pun.** Pesan dimasukkan manual oleh CS,
 > dan balasan tetap dikirim CS melalui Seller Center masing-masing marketplace. Endpoint
 > `GET /api/health` mengembalikan `"marketplace_api_connected": false` sebagai penegasan.
 
@@ -158,19 +158,19 @@ mencoba alur chat, masuk sebagai Ayu. Untuk laporan laba, masuk sebagai Husin.
 
 Peran: CS.
 
-**1. Salin pesan pembeli dari Seller Center.** Scentra tidak menarik chat sendiri, jadi
+**1. Salin pesan pembeli dari Seller Center.** ResponIn tidak menarik chat sendiri, jadi
 pesannya disalin manual.
 
 **2. Buka Unified Inbox, klik "+ Tambah percakapan".** Isi marketplace, nama pembeli,
 nomor pesanan atau chat, produk yang ditanyakan bila sudah jelas, lalu tempel isi
 pesannya. Marketplace, nama, dan isi pesan wajib diisi.
 
-Kalau nomor pesanan itu sudah pernah dicatat, Scentra memperingatkan dan menawarkan
+Kalau nomor pesanan itu sudah pernah dicatat, ResponIn memperingatkan dan menawarkan
 menggabungkan pesan ke percakapan yang sudah ada. Terima tawaran itu, supaya satu pembeli
 tidak terpecah jadi dua antrean. Dua pembeli bernama sama tidak pernah digabung, karena
 yang dipakai sebagai pengenal adalah nomornya.
 
-**3. Klik "Simpan pesan".** Scentra langsung memberi label intent dan prioritas, lalu
+**3. Klik "Simpan pesan".** ResponIn langsung memberi label intent dan prioritas, lalu
 menyusun rekomendasi balasan.
 
 **4. Baca rekomendasinya beserta sumbernya.** Di bawah teks balasan ada chip kecil
@@ -183,16 +183,16 @@ percakapan sengaja tidak berubah, karena menyalin belum berarti terkirim.
 
 **6. Tempel balasannya di Seller Center dan kirim dari sana.**
 
-**7. Kembali ke Scentra, catat tindakannya, lalu ubah statusnya.** Misalnya tulis
+**7. Kembali ke ResponIn, catat tindakannya, lalu ubah statusnya.** Misalnya tulis
 "balasan dikirim lewat Seller Center", lalu ubah status jadi Waiting for Customer atau
 Resolved. Semua perubahan ini masuk ke riwayat aktivitas di bagian bawah halaman.
 
 ### Kalau rekomendasinya ditandai perlu verifikasi
 
-Artinya Scentra tidak punya data yang cukup, jadi dia sengaja tidak menjanjikan apa pun.
+Artinya ResponIn tidak punya data yang cukup, jadi dia sengaja tidak menjanjikan apa pun.
 Alasannya tertulis di sebelah penandanya. Tiga yang paling sering muncul:
 
-Stok varian itu belum pernah dicatat, jadi Scentra tidak menyatakan tersedia maupun
+Stok varian itu belum pernah dicatat, jadi ResponIn tidak menyatakan tersedia maupun
 habis. Cek stok fisik dulu, baru balas.
 
 Stok tercatat tapi umurnya lebih dari 48 jam. Angkanya ditampilkan, tapi balasannya
@@ -281,9 +281,9 @@ Dari studi kasus: CS berulang kali mengetik jawaban yang sama ("Ready, Kak?",
 "Ada ukuran apa saja?", "Bisa dikirim hari ini?"), sehingga pembeli yang menyampaikan
 **keluhan** justru menunggu lebih lama.
 
-Scentra menangani tiga jenis pesan yang disebut studi kasus:
+ResponIn menangani tiga jenis pesan yang disebut studi kasus:
 
-| Jenis pesan           | Contoh                                      | Yang dilakukan Scentra                                   |
+| Jenis pesan           | Contoh                                      | Yang dilakukan ResponIn                                   |
 | --------------------- | ------------------------------------------- | -------------------------------------------------------- |
 | Pertanyaan umum       | "Ready, Kak?", "Ada ukuran apa saja?"        | Menyusun jawaban dari katalog, stok, dan aturan pengiriman |
 | Keluhan               | "Kok yang dikirim 500 g?"                    | Diberi label komplain, prioritas tinggi, diteruskan ke staf |
@@ -295,7 +295,7 @@ Omzet besar belum berarti untung. Setiap marketplace memotong komisi, voucher, o
 yang ditanggung penjual, dan retur dengan besaran berbeda, sehingga pemilik sulit tahu
 produk mana yang benar-benar menguntungkan.
 
-Scentra menghitung laba per produk, per marketplace, dan per periode dari transaksi
+ResponIn menghitung laba per produk, per marketplace, dan per periode dari transaksi
 yang dimasukkan manual atau diimpor dari berkas CSV. Dua aturan menentukan rancangannya:
 
 - **Data kosong bukan nol.** Transaksi yang modal produknya atau tarif potongannya belum
@@ -320,7 +320,7 @@ Laporan ini hanya dapat dibuka **pemilik usaha**; CS tidak melihat margin.
        │                                           ▼
        │                            ┌─────────────────────────────────────┐
        └────────────────────────────│ FastAPI                             │
-         (di luar Scentra)          │  classify()  → intent + prioritas   │
+         (di luar ResponIn)          │  classify()  → intent + prioritas   │
                                     │  suggest()   → balasan + sumber     │
                                     └──────────────┬──────────────────────┘
                                                    │ SQLModel
@@ -371,7 +371,7 @@ Setiap rekomendasi menampilkan **sumbernya** sebagai chip, misalnya
 ### Batas yang ditegakkan sistem
 
 - Tombol **Salin teks** tidak mengubah status percakapan. Menyalin bukan berarti terkirim.
-- Status di Scentra adalah pencatatan internal, bukan bukti pesan terkirim di marketplace.
+- Status di ResponIn adalah pencatatan internal, bukan bukti pesan terkirim di marketplace.
 - Dua pelanggan bernama sama **tidak pernah** digabung. Pengenal utama adalah referensi
   percakapan/order, bukan nama.
 - Pesan dengan referensi yang sudah ada memicu peringatan duplikasi sebelum CS menyimpan.
@@ -579,5 +579,5 @@ klasifikasi dan perhitungan margin dilakukan oleh aturan di `backend/app/nlp.py`
 ## 11. Privasi
 
 Seluruh nama, nomor pesanan, dan angka pada data uji dibuat sendiri dan tidak mewakili
-pelanggan, harga, atau transaksi nyata. Scentra tidak menyimpan password, cookie, atau
+pelanggan, harga, atau transaksi nyata. ResponIn tidak menyimpan password, cookie, atau
 token akun marketplace. Password pengguna disimpan sebagai hash PBKDF2, bukan teks biasa.

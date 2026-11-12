@@ -191,7 +191,7 @@ export function AddConversationDialog({
           ) : null}
 
           <p className="text-[11px] text-faint">
-            Sumber input tercatat sebagai <span className="font-mono">manual</span>. Scentra
+            Sumber input tercatat sebagai <span className="font-mono">manual</span>. ResponIn
             tidak pernah mengambil pesan langsung dari marketplace.
           </p>
         </div>

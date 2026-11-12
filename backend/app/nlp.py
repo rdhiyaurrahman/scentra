@@ -324,7 +324,7 @@ def suggest(
             text=f"{hi} kami cek dulu status pesanan {external_reference} ya. "
                  "Mohon ditunggu, kami kabari di chat ini.",
             sources=[_src("REF", external_reference)], needs_verification=True,
-            reason="Status pesanan tidak ada di Scentra — harus dicek manual di Seller Center.")
+            reason="Status pesanan tidak ada di ResponIn — harus dicek manual di Seller Center.")
 
     faq = find_faq(kb, text)
     if faq is not None:

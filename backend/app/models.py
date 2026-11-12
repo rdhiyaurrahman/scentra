@@ -1,4 +1,4 @@
-"""Tabel basis data Scentra — mengikuti PRD bab 11 (Model Data Konseptual)."""
+"""Tabel basis data ResponIn — mengikuti PRD bab 11 (Model Data Konseptual)."""
 from __future__ import annotations
 
 from datetime import datetime, time, timezone

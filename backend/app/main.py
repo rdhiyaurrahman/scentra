@@ -8,7 +8,7 @@ from .profit_routes import router as profit_router
 from .routes import router
 
 app = FastAPI(
-    title="Scentra Manual Unified Inbox API",
+    title="ResponIn Manual Unified Inbox API",
     version="1.0.0",
     description=(
         "API internal untuk pencatatan manual percakapan pelanggan dari Shopee, "

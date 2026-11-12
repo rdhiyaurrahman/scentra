@@ -6,7 +6,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Scentra — Manual Unified Inbox",
+  title: "ResponIn — Manual Unified Inbox",
   description:
     "Workspace internal customer service untuk mencatat dan menangani percakapan " +
     "Shopee, TikTok Shop, dan Lazada dalam satu tempat.",
