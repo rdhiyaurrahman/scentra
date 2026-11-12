@@ -30,3 +30,6 @@ Thumbs.db
 
 # Draf HTML awal sebelum pindah ke Next.js + FastAPI (bukan bagian produk)
 scentra-draft.html
+
+# Dibuat ulang otomatis oleh `next dev`, bukan bagian produk
+AGENTS.md
