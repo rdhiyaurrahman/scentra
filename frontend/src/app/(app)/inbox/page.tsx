@@ -50,7 +50,7 @@ function Inbox() {
   const [priority, setPriority] = useState<string>(params.get("priority") ?? "");
   const [needsVerification, setNeedsVerification] = useState(false);
   const [mine, setMine] = useState(false);
-  const [q, setQ] = useState("");
+  const [q, setQ] = useState(params.get("q") ?? "");
 
   useEffect(() => {
     setMe(getUser());

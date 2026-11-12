@@ -22,12 +22,52 @@ interface Data {
   disclaimer: string;
 }
 
-const CARDS: { key: string; label: string; tone: Tone; icon: string }[] = [
-  { key: "conversations", label: "Total percakapan", tone: "lav", icon: "💬" },
-  { key: "new", label: "Belum dibuka", tone: "sky", icon: "🆕" },
-  { key: "waiting_staff", label: "Perlu verifikasi", tone: "amber", icon: "🔎" },
-  { key: "high_priority", label: "Prioritas tinggi", tone: "rose", icon: "⚠️" },
-  { key: "resolved", label: "Selesai internal", tone: "mint", icon: "✓" },
+// Pil di tiap kartu menyebut hal yang tidak terbaca dari angkanya sendiri:
+// cakupan datanya, atau apakah angka itu menuntut tindakan.
+const aman = { label: "Aman", tone: "mint" as Tone };
+
+const CARDS: {
+  key: string;
+  label: string;
+  tone: Tone;
+  icon: string;
+  status: (n: number) => { label: string; tone: Tone };
+}[] = [
+  {
+    key: "conversations",
+    label: "Total percakapan",
+    tone: "lav",
+    icon: "💬",
+    status: () => ({ label: "3 marketplace", tone: "slate" }),
+  },
+  {
+    key: "new",
+    label: "Belum dibuka",
+    tone: "sky",
+    icon: "🆕",
+    status: (n) => (n === 0 ? aman : { label: "Perlu dibuka", tone: "sky" }),
+  },
+  {
+    key: "waiting_staff",
+    label: "Perlu verifikasi",
+    tone: "amber",
+    icon: "🔎",
+    status: (n) => (n === 0 ? aman : { label: "Cek knowledge base", tone: "amber" }),
+  },
+  {
+    key: "high_priority",
+    label: "Prioritas tinggi",
+    tone: "rose",
+    icon: "⚠️",
+    status: (n) => (n === 0 ? aman : { label: "Dahulukan", tone: "rose" }),
+  },
+  {
+    key: "resolved",
+    label: "Selesai internal",
+    tone: "mint",
+    icon: "✓",
+    status: () => ({ label: "Status internal", tone: "slate" }),
+  },
 ];
 
 export default function DashboardPage() {
@@ -65,16 +105,12 @@ export default function DashboardPage() {
             })}
           </p>
         </div>
-        <Link
-          href="/inbox"
-          className="focus-ring rounded-full bg-navy px-4 py-2 text-[13px] font-semibold text-white transition hover:bg-[#262b45]"
-        >
-          Buka inbox
-        </Link>
       </header>
 
-      {/* Ringkasan antrean, mengikuti pola kartu "AI Summary" pada referensi. */}
-      <section className="card p-5">
+      {/* Ringkasan antrean di kiri, tindakan utama di kartu beraksen kanan,
+          mengikuti pola "AI Summary" + kartu ajakan pada referensi desain. */}
+      <section className="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
+      <div className="card p-5">
         <div className="flex flex-wrap items-center gap-3">
           <Tile tone="lav">◧</Tile>
           <div className="flex-1">
@@ -120,20 +156,51 @@ export default function DashboardPage() {
             }
           />
         </div>
+      </div>
+
+        <aside className="card card-accent flex flex-col p-5">
+          <h2 className="text-[15px] font-bold tracking-tight">Mulai dari sini</h2>
+          <p className="mt-1 text-[12.5px] leading-relaxed text-muted">
+            Salin pesan pembeli dari Seller Center, lalu catat di sini supaya antreannya
+            jadi satu.
+          </p>
+          <Link
+            href="/inbox"
+            className="focus-ring mt-4 rounded-full bg-white px-4 py-2.5 text-center text-[13px] font-semibold text-ink shadow-sm transition hover:bg-[#f7f8fc]"
+          >
+            Catat pesan baru
+          </Link>
+          <div className="mt-3 space-y-1.5 text-[12.5px] font-semibold text-lav-fg">
+            <Link href="/inbox?priority=high" className="block hover:underline">
+              Antrean prioritas tinggi
+            </Link>
+            {user && user.role !== "cs" ? (
+              <Link href="/profitability" className="block hover:underline">
+                Laporan laba per produk
+              </Link>
+            ) : null}
+            <Link href="/knowledge" className="block hover:underline">
+              Knowledge base
+            </Link>
+          </div>
+        </aside>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        {CARDS.map((c) => (
-          <div key={c.key} className="card p-4">
-            <div className="flex items-start justify-between gap-2">
-              <Tile tone={c.tone}>{c.icon}</Tile>
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        {CARDS.map((c) => {
+          const n = data.totals[c.key] ?? 0;
+          const status = c.status(n);
+          return (
+            <div key={c.key} className="card p-4">
+              <div className="flex items-start justify-between gap-2">
+                <Tile tone={c.tone}>{c.icon}</Tile>
+                <Pill tone={status.tone}>{status.label}</Pill>
+              </div>
+              <p className="mt-3 text-xs font-medium text-muted">{c.label}</p>
+              <p className="mt-0.5 text-[30px] leading-none font-bold tracking-tight">{n}</p>
             </div>
-            <p className="mt-3 text-xs font-medium text-muted">{c.label}</p>
-            <p className="mt-0.5 text-[30px] leading-none font-bold tracking-tight">
-              {data.totals[c.key] ?? 0}
-            </p>
-          </div>
-        ))}
+          );
+        })}
       </section>
 
       <section className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">

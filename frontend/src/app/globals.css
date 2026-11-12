@@ -53,6 +53,14 @@ body {
     0 10px 28px rgba(20, 24, 41, 0.045);
 }
 
+/* Kartu beraksen, dipakai sekali per halaman untuk tindakan utama. Warnanya
+   ditulis di sini, bukan sebagai utility, karena .card datang setelah utility
+   Tailwind dan akan menimpanya. */
+.card-accent {
+  background: linear-gradient(135deg, #efebff 0%, #e7edff 100%);
+  border-color: #ddd8ff;
+}
+
 .pill {
   display: inline-flex;
   align-items: center;

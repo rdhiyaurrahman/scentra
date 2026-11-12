@@ -42,6 +42,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     const u = getUser();
@@ -141,7 +142,29 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               ))}
             </nav>
 
-            <div className="flex-1" />
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                router.push(`/inbox?q=${encodeURIComponent(query.trim())}`);
+              }}
+              className="flex flex-1 justify-center px-2"
+            >
+              <label className="relative hidden w-full max-w-[420px] md:block">
+                <span
+                  className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-[13px] text-faint"
+                  aria-hidden
+                >
+                  ⌕
+                </span>
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  aria-label="Cari percakapan"
+                  placeholder="Cari nama, nomor pesanan, atau isi pesan…"
+                  className="focus-ring w-full rounded-full border border-line bg-[#f7f8fc] py-2 pr-3 pl-8 text-[12.5px] outline-none transition placeholder:text-faint focus:bg-white"
+                />
+              </label>
+            </form>
 
             <div className="flex items-center gap-3">
               <div className="hidden text-right sm:block">
