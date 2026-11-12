@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  --color-canvas: #f3f5fb;
+  --color-canvas: #f7f8fc;
   --color-surface: #ffffff;
   --color-ink: #141829;
   --color-muted: #6b7190;
   --color-faint: #a3a9bf;
-  --color-line: #eceef6;
+  --color-line: #eef0f7;
   --color-navy: #1b2135;
   --color-accent: #2f6bf6;
   --color-accent-soft: #eef3ff;
@@ -42,16 +42,17 @@ body {
 /* Halaman dengan latar lembut seperti referensi desain. */
 .app-bg {
   background:
-    radial-gradient(1200px 520px at 15% -10%, #e9eeff 0%, rgba(233, 238, 255, 0) 60%),
-    radial-gradient(1000px 460px at 92% -4%, #e7f3ff 0%, rgba(231, 243, 255, 0) 55%),
+    radial-gradient(1100px 360px at 50% -18%, #e9effc 0%, rgba(233, 239, 252, 0) 72%),
     var(--color-canvas);
 }
 
 .card {
   background: var(--color-surface);
-  border: 1px solid var(--color-line);
+  border: 1px solid #f1f3f9;
   border-radius: 16px;
-  box-shadow: 0 1px 2px rgba(20, 24, 41, 0.035);
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 10px 26px -10px rgba(16, 24, 40, 0.1);
 }
 
 .pill {

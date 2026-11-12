@@ -52,7 +52,7 @@ const CARDS: {
     label: "Perlu verifikasi",
     tone: "amber",
     icon: "🔎",
-    status: (n) => (n === 0 ? aman : { label: "Cek knowledge base", tone: "amber" }),
+    status: (n) => (n === 0 ? aman : { label: "Cek dulu", tone: "amber" }),
   },
   {
     key: "high_priority",
