@@ -73,7 +73,7 @@ def current_user(
 
 
 def require_roles(*roles: str):
-    """Batasi endpoint ke peran tertentu (matriks hak akses PRD bab 4.4)."""
+    """Batasi endpoint ke peran tertentu (matriks hak akses PRD bab 4.3)."""
 
     def dependency(user: User = Depends(current_user)) -> User:
         if user.role not in roles:

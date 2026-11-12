@@ -44,7 +44,7 @@ export default function ProfitabilityPage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const role = typeof window !== "undefined" ? getUser()?.role : undefined;
-  const allowed = role === "supervisor" || role === "owner";
+  const allowed = role === "owner";
 
   const startIso = (() => {
     const days = PERIODS.find((p) => p.key === period)?.days;
@@ -107,7 +107,7 @@ export default function ProfitabilityPage() {
       <div className="card p-8 text-center">
         <h1 className="text-[17px] font-bold tracking-tight">Akses terbatas</h1>
         <p className="mt-1.5 text-sm text-muted">
-          Laporan profitabilitas hanya dapat dibuka supervisor dan pemilik usaha.
+          Laporan profitabilitas hanya dapat dibuka pemilik usaha.
         </p>
       </div>
     );

@@ -76,30 +76,26 @@ bisa diukur jujur dari dalam aplikasi ini.
 Staf yang setiap hari membalas chat pembeli. Di data demo ada dua, Ayu dan Bima. Mereka
 yang paling sering membuka Scentra, dan antarmuka inbox dirancang untuk mereka.
 
-### 4.2 Supervisor
+### 4.2 Pemilik usaha
 
-Atasan tim CS, di data demo Rina. Membagi percakapan ke anggota tim, memantau antrean
-yang menumpuk, dan menjelaskan angka margin ke pemilik ketika ditanya.
+Husin. Tidak ikut membalas chat. Dia membaca inbox untuk tahu apa yang sedang terjadi,
+tetapi tidak mengubah isinya. Yang dia kelola adalah knowledge base, modal produk, tarif
+marketplace, dan data penjualan, lalu membaca laporan profitabilitas.
 
-### 4.3 Pemilik usaha
+### 4.3 Matriks hak akses
 
-Husin. Tidak ikut membalas chat dan tidak mengatur pembagian kerja. Yang dia buka hanya
-laporan profitabilitas.
-
-### 4.4 Matriks hak akses
-
-| Kemampuan | CS | Supervisor | Pemilik |
-| --- | :-: | :-: | :-: |
-| Melihat dan mencatat percakapan | ya | ya | ya |
-| Menyalin, menyunting, dan menandai rekomendasi balasan | ya | ya | ya |
-| Mengoreksi klasifikasi | ya | ya | ya |
-| Mengubah status dan prioritas percakapan | ya | ya | ya |
-| Menambah catatan internal dan catatan tindakan | ya | ya | ya |
-| Membaca knowledge base | ya | ya | ya |
-| Membuka dashboard operasional | ya | ya | ya |
-| Menugaskan percakapan ke pengguna lain | tidak | ya | tidak |
-| Membuka laporan profitabilitas | tidak | ya | ya |
-| Mencatat transaksi dan mengimpor CSV | tidak | ya | ya |
+| Kemampuan | CS | Pemilik |
+| --- | :-: | :-: |
+| Melihat inbox dan detail percakapan | ya | ya, baca saja |
+| Mencatat percakapan dan pesan baru | ya | tidak |
+| Menyalin dan menyunting rekomendasi balasan | ya | tidak |
+| Mengoreksi klasifikasi | ya | tidak |
+| Mengubah status, prioritas, dan penugasan | ya | tidak |
+| Menambah catatan internal dan catatan tindakan | ya | tidak |
+| Membaca knowledge base | ya | ya |
+| Membuka dashboard operasional | ya | ya |
+| Membuka laporan profitabilitas | tidak | ya |
+| Mencatat transaksi dan mengimpor CSV | tidak | ya |
 
 Pembatasan ditegakkan di server, bukan dengan menyembunyikan menu. Permintaan langsung ke
 endpoint yang tidak diizinkan dijawab 403.
@@ -175,7 +171,7 @@ dikirim lewat Seller Center". Catatan ini murni internal dan bukan bukti terkiri
 
 **FR-12 Status dan penugasan.** Status percakapan: New, Open, Assigned, Waiting for
 Staff, Waiting for Customer, Resolved, Closed. Prioritas: high, normal, low. Penugasan ke
-pengguna lain hanya oleh supervisor.
+pengguna lain dilakukan sesama CS.
 
 **FR-13 Filter dan pencarian.** Antrean dapat disaring menurut marketplace, status, dan
 penandaan perlu verifikasi, serta dicari menurut nama, referensi, atau isi pesan.
@@ -191,7 +187,7 @@ balasan, dan penyalinan tercatat beserta pelaku dan waktunya.
 
 ### 6.3 Masalah 2 — profitabilitas produk
 
-**FR-17 Pencatatan transaksi.** Supervisor atau pemilik mencatat satu baris penjualan:
+**FR-17 Pencatatan transaksi.** Pemilik mencatat satu baris penjualan:
 nomor pesanan, marketplace, SKU varian, tanggal, jumlah, penjualan kotor, voucher
 penjual, ongkir yang ditanggung penjual, serta jumlah dan nilai retur.
 
@@ -378,7 +374,7 @@ boleh bernilai `null` yang berarti belum diketahui.
 | AC-06 | Stok yang lebih tua dari 48 jam ditandai kedaluwarsa dan balasan meminta konfirmasi |
 | AC-07 | Menyalin rekomendasi tidak mengubah status percakapan |
 | AC-08 | Catatan tindakan tercatat sebagai catatan internal, tanpa klaim terkirim di marketplace |
-| AC-09 | CS ditolak saat menugaskan percakapan; penugasan oleh supervisor tercatat di riwayat |
+| AC-09 | Pemilik ditolak 403 saat menulis ke percakapan; penugasan oleh CS tercatat di riwayat |
 | AC-10 | Filter marketplace, status, dan perlu verifikasi mengembalikan hasil yang sesuai |
 
 ### Masalah 2

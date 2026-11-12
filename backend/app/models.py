@@ -9,7 +9,7 @@ from sqlmodel import Field, SQLModel
 
 # --- nilai tetap -------------------------------------------------------------
 
-ROLES = ("cs", "supervisor", "owner")
+ROLES = ("cs", "owner")
 MARKETPLACES = ("shopee", "tiktok", "lazada")
 STATUSES = (
     "New", "Open", "Assigned", "Waiting for Staff",

@@ -120,9 +120,11 @@ function Inbox() {
             Percakapan Shopee, TikTok Shop, dan Lazada yang dicatat manual oleh CS.
           </p>
         </div>
-        <Button variant="primary" onClick={() => setAdding(true)}>
-          + Tambah percakapan
-        </Button>
+        {me?.role === "cs" ? (
+          <Button variant="primary" onClick={() => setAdding(true)}>
+            + Tambah percakapan
+          </Button>
+        ) : null}
       </header>
 
       <div className="grid gap-4 xl:grid-cols-[198px_minmax(300px,340px)_minmax(0,1fr)]">

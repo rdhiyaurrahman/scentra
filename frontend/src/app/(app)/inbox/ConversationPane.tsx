@@ -46,7 +46,8 @@ export function ConversationPane({
 
   useEffect(() => setDraft(reply?.reply_text ?? ""), [reply?.id, reply?.reply_text]);
 
-  const canAssign = me?.role === "supervisor";
+  // Matriks hak akses PRD bab 4.3: pemilik boleh membaca inbox, tidak menulis.
+  const canWrite = me?.role === "cs";
   const mp = MARKETPLACES[detail.marketplace_code];
 
   async function guard(fn: () => Promise<void>) {
@@ -109,12 +110,13 @@ export function ConversationPane({
           <div className="mt-4 flex gap-2 border-t border-line pt-4">
             <input
               className={inputClass}
+              disabled={!canWrite}
               placeholder="Catat pesan pelanggan berikutnya…"
               value={extraMessage}
               onChange={(e) => setExtraMessage(e.target.value)}
             />
             <Button
-              disabled={busy || !extraMessage.trim()}
+              disabled={busy || !canWrite || !extraMessage.trim()}
               onClick={() =>
                 guard(async () => {
                   await api.addMessage(detail.id, extraMessage.trim());
@@ -144,6 +146,7 @@ export function ConversationPane({
                 </span>
                 <select
                   className={inputClass}
+                  disabled={!canWrite}
                   value={lastCustomer.classification.intent}
                   onChange={(e) =>
                     guard(async () => {
@@ -163,6 +166,7 @@ export function ConversationPane({
                 <span className="mb-1.5 block text-xs font-semibold text-muted">Prioritas</span>
                 <select
                   className={inputClass}
+                  disabled={!canWrite}
                   value={detail.priority}
                   onChange={(e) =>
                     guard(async () => {
@@ -214,6 +218,7 @@ export function ConversationPane({
             <textarea
               className="focus-ring min-h-[128px] w-full resize-y border-0 px-5 py-4 text-sm leading-relaxed outline-none"
               value={draft}
+              disabled={!canWrite}
               onChange={(e) => setDraft(e.target.value)}
               aria-label="Teks rekomendasi balasan"
             />
@@ -231,11 +236,11 @@ export function ConversationPane({
             </div>
 
             <div className="flex flex-wrap items-center gap-2 border-t border-line px-5 py-3.5">
-              <Button variant="primary" onClick={copyReply} disabled={busy || !draft.trim()}>
+              <Button variant="primary" onClick={copyReply} disabled={busy || !canWrite || !draft.trim()}>
                 Salin teks
               </Button>
               <Button
-                disabled={busy}
+                disabled={busy || !canWrite}
                 onClick={() =>
                   guard(async () => {
                     await api.addAction(
@@ -261,6 +266,7 @@ export function ConversationPane({
             <span className="mb-1.5 block text-xs font-semibold text-muted">Status</span>
             <select
               className={inputClass}
+              disabled={!canWrite}
               value={detail.status}
               onChange={(e) =>
                 guard(async () => {
@@ -281,7 +287,7 @@ export function ConversationPane({
             </span>
             <select
               className={inputClass}
-              disabled={!canAssign}
+              disabled={!canWrite}
               value={detail.assigned_user_id ?? ""}
               onChange={(e) =>
                 guard(async () => {
@@ -301,9 +307,9 @@ export function ConversationPane({
                   </option>
                 ))}
             </select>
-            {!canAssign ? (
+            {!canWrite ? (
               <span className="mt-1 block text-[11px] text-faint">
-                Hanya supervisor yang dapat menugaskan ulang.
+                Penugasan diatur CS. Pemilik membaca inbox tanpa mengubahnya.
               </span>
             ) : null}
           </label>
@@ -319,12 +325,13 @@ export function ConversationPane({
           <textarea
             className={`${inputClass} min-h-[72px] resize-y`}
             placeholder="Tidak terlihat pelanggan…"
+            disabled={!canWrite}
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />
           <Button
             className="mt-2 w-full"
-            disabled={busy || !note.trim()}
+            disabled={busy || !canWrite || !note.trim()}
             onClick={() =>
               guard(async () => {
                 await api.addNote(detail.id, note.trim());

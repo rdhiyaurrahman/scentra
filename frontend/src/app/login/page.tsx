@@ -8,7 +8,7 @@ import { Button, Field, inputClass } from "@/lib/ui";
 
 const DEMO = [
   { label: "Ayu — CS", email: "ayu@scentra.test", password: "ayu12345" },
-  { label: "Rina — Supervisor", email: "rina@scentra.test", password: "rina12345" },
+  { label: "Bima — CS", email: "bima@scentra.test", password: "bima12345" },
   { label: "Husin — Pemilik", email: "husin@scentra.test", password: "husin12345" },
 ];
 
@@ -62,7 +62,7 @@ export default function LoginPage() {
 
         <section className="p-8 sm:p-10">
           <h2 className="text-[21px] font-bold tracking-tight">Masuk ke Scentra</h2>
-          <p className="mt-1 text-sm text-muted">Gunakan akun yang diberikan supervisor.</p>
+          <p className="mt-1 text-sm text-muted">Gunakan akun yang diberikan pemilik usaha.</p>
 
           <form onSubmit={submit} className="mt-7 space-y-4">
             <Field label="Email">

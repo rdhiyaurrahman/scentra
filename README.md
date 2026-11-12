@@ -141,19 +141,18 @@ Seluruhnya data sintetis. Tidak ada data pelanggan nyata maupun kredensial toko.
 | ---------- | -------------------- | ------------ |
 | CS         | ayu@scentra.test     | ayu12345     |
 | CS         | bima@scentra.test    | bima12345    |
-| Supervisor | rina@scentra.test    | rina12345    |
 | Pemilik    | husin@scentra.test   | husin12345   |
 
 ---
 
 ## 2. Panduan pemakaian
 
-Yang dibuka tiap peran berbeda. CS menghabiskan waktunya di Unified Inbox, supervisor
-membagi pekerjaan dan sesekali melihat margin, pemilik hampir hanya membuka
-Profitabilitas.
+Ada dua peran, dan keduanya memakai aplikasi ini untuk hal yang berbeda. CS
+menghabiskan waktunya di Unified Inbox. Pemilik usaha membaca inbox tanpa mengubahnya,
+dan yang sering dia buka adalah Profitabilitas.
 
-Untuk mencoba seluruh aplikasi dengan satu akun, masuk sebagai Rina (supervisor). Dia
-bisa melakukan semua yang CS bisa, ditambah membuka laporan laba.
+Tidak ada satu akun yang mencakup semuanya, karena itu memang yang dibatasi. Untuk
+mencoba alur chat, masuk sebagai Ayu. Untuk laporan laba, masuk sebagai Husin.
 
 ### Menangani satu chat, dari awal sampai selesai
 
@@ -200,7 +199,7 @@ Stok tercatat tapi umurnya lebih dari 48 jam. Angkanya ditampilkan, tapi balasan
 meminta konfirmasi dulu karena bisa saja sudah berubah.
 
 Aturan pengiriman marketplace itu belum diisi, misalnya cutoff Lazada. Pertanyaan
-pengiriman diarahkan ke supervisor.
+pengiriman ditahan untuk diperiksa pemilik usaha.
 
 Penandaan ini bisa dipakai sebagai filter di daftar percakapan, supaya yang butuh
 pengecekan manusia bisa dikumpulkan sekaligus.
@@ -211,10 +210,10 @@ Pada panel Klasifikasi, pilih intent yang benar. Rekomendasi balasannya langsung
 ulang, dan koreksinya tersimpan beserta nama yang mengoreksi. Catatan itu yang nanti
 dipakai mengukur seberapa sering aturannya meleset.
 
-### Yang dikerjakan supervisor
+### Membagi dan menyaring antrean
 
-Menugaskan percakapan ke anggota tim lewat panel Status di halaman detail. Hanya
-supervisor yang bisa, dan setiap penugasan tercatat di riwayat.
+Menugaskan percakapan ke anggota tim lewat panel Status di halaman detail. Sesama CS
+boleh saling menugaskan, dan setiap penugasan tercatat di riwayat.
 
 Menyaring antrean menurut marketplace, status, atau penandaan perlu verifikasi, untuk
 melihat mana yang menumpuk. Kotak pencarian menerima nama, nomor pesanan, maupun potongan
@@ -222,7 +221,7 @@ isi pesan.
 
 ### Membaca laporan profitabilitas
 
-Peran: supervisor dan pemilik. Menu ini tidak muncul bagi CS.
+Peran: pemilik usaha. Menu ini tidak muncul bagi CS.
 
 Di atas ada filter periode (30 hari, 90 hari, atau semua) dan filter marketplace. Di
 bawahnya lima kartu: penjualan bersih, total biaya, laba, margin, dan jumlah transaksi
@@ -306,7 +305,7 @@ yang dimasukkan manual atau diimpor dari berkas CSV. Dua aturan menentukan ranca
   transaksi aslinya, lengkap dengan rincian penjualan bersih, komisi, voucher, ongkir,
   dan modal. Jumlah rincian selalu sama dengan ringkasannya.
 
-Laporan ini hanya dapat dibuka **supervisor dan pemilik usaha**; CS tidak melihat margin.
+Laporan ini hanya dapat dibuka **pemilik usaha**; CS tidak melihat margin.
 
 ---
 
@@ -363,7 +362,7 @@ Rekomendasi hanya boleh menyatakan fakta yang ada di knowledge base:
 | Stok **lebih tua dari 48 jam**           | Ditandai kedaluwarsa, minta konfirmasi sebelum dijanjikan        |
 | Aturan pengiriman marketplace kosong     | Jawaban aman, minta verifikasi                                   |
 | Komplain                                 | Prioritas tinggi, template generik tidak dipakai                 |
-| Retur/refund                             | Eskalasi ke supervisor (aturan refund belum ada di KB)           |
+| Retur/refund                             | Ditahan untuk diperiksa pemilik (aturan refund belum ada di KB)  |
 | Tidak dikenali                           | Jawaban menahan waktu, minta staf memeriksa                      |
 
 Setiap rekomendasi menampilkan **sumbernya** sebagai chip, misalnya

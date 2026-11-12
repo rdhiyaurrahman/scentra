@@ -19,12 +19,16 @@ from .models import (
 
 router = APIRouter(prefix="/api")
 
+# Matriks hak akses PRD bab 4.3: hanya CS yang membuat dan mengubah percakapan.
+# Owner boleh membaca inbox, tetapi tidak menulis ke dalamnya.
+agent = require_roles("cs")
+
 ESCALATION_RULES = [
     ("Stok belum tercatat atau kedaluwarsa lebih dari 48 jam",
      "Jawaban aman tanpa klaim, status menjadi Waiting for Staff"),
     ("Aturan pengiriman marketplace kosong", "Jawaban aman dan minta verifikasi staf"),
     ("Komplain terdeteksi", "Prioritas tinggi, template generik tidak dipakai"),
-    ("Permintaan retur atau refund", "Eskalasi ke supervisor, aturan belum ada di KB"),
+    ("Permintaan retur atau refund", "Ditahan untuk diperiksa pemilik, aturan belum ada di KB"),
     ("Pesan tidak dikenali (unknown)", "Pesan tetap disimpan, staf diminta memeriksa"),
     ("Pertanyaan pesanan tanpa referensi order", "Minta nomor pesanan kepada pelanggan"),
 ]
@@ -229,7 +233,7 @@ def get_conversation(
 def create_conversation(
     body: schemas.ConversationIn,
     session: Session = Depends(get_session),
-    user: User = Depends(current_user),
+    user: User = Depends(agent),
 ):
     """Manual capture (FR-02). Sumber input selalu `manual`; waktu capture dicatat
     otomatis. Scentra tidak pernah mengambil pesan dari marketplace."""
@@ -271,7 +275,7 @@ def add_message(
     conversation_id: int,
     body: schemas.MessageIn,
     session: Session = Depends(get_session),
-    user: User = Depends(current_user),
+    user: User = Depends(agent),
 ):
     c = session.get(Conversation, conversation_id)
     if c is None:
@@ -290,7 +294,7 @@ def patch_conversation(
     conversation_id: int,
     body: schemas.ConversationPatch,
     session: Session = Depends(get_session),
-    user: User = Depends(current_user),
+    user: User = Depends(agent),
 ):
     try:
         body = body.validated()
@@ -299,10 +303,6 @@ def patch_conversation(
     c = session.get(Conversation, conversation_id)
     if c is None:
         raise HTTPException(status_code=404, detail="Percakapan tidak ditemukan.")
-
-    if body.assigned_user_id is not None and user.role not in ("supervisor",):
-        raise HTTPException(status_code=403,
-                            detail="Hanya supervisor yang dapat menugaskan percakapan.")
 
     if body.status is not None and body.status != c.status:
         services.log_event(session, c.id, user.id, "status",
@@ -331,7 +331,7 @@ def correct_classification(
     message_id: int,
     body: schemas.ClassificationPatch,
     session: Session = Depends(get_session),
-    user: User = Depends(current_user),
+    user: User = Depends(agent),
 ):
     """Koreksi CS disimpan untuk evaluasi akurasi (FR-06)."""
     try:
@@ -383,7 +383,7 @@ def edit_reply(
     reply_id: int,
     body: schemas.ReplyEditIn,
     session: Session = Depends(get_session),
-    user: User = Depends(current_user),
+    user: User = Depends(agent),
 ):
     """CS boleh menyunting rekomendasi sebelum menyalin (FR-08)."""
     reply = session.get(SuggestedReply, reply_id)
@@ -399,7 +399,7 @@ def edit_reply(
 def mark_copied(
     reply_id: int,
     session: Session = Depends(get_session),
-    user: User = Depends(current_user),
+    user: User = Depends(agent),
 ):
     """Mencatat bahwa teks disalin. Status percakapan sengaja TIDAK diubah:
     disalin bukan berarti terkirim (aturan bisnis no. 8 dan 9, AC-07)."""
@@ -420,7 +420,7 @@ def add_note(
     conversation_id: int,
     body: schemas.NoteIn,
     session: Session = Depends(get_session),
-    user: User = Depends(current_user),
+    user: User = Depends(agent),
 ):
     """Catatan internal disimpan sebagai pesan bertipe terpisah supaya tidak
     pernah tercampur dengan pesan pelanggan (FR-11)."""
@@ -440,7 +440,7 @@ def add_action(
     conversation_id: int,
     body: schemas.ActionIn,
     session: Session = Depends(get_session),
-    user: User = Depends(current_user),
+    user: User = Depends(agent),
 ):
     """Catatan tindakan CS, misalnya 'balasan dikirim lewat Seller Center'.
     Scentra tidak punya konfirmasi dari marketplace, jadi ini murni catatan

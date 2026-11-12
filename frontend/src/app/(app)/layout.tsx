@@ -22,7 +22,7 @@ const NAV = [
         href: "/profitability",
         label: "Profitabilitas",
         icon: "▤",
-        roles: ["supervisor", "owner"],
+        roles: ["owner"],
       },
     ],
   },
@@ -34,7 +34,6 @@ const NAV = [
 
 const ROLE_LABEL: Record<string, string> = {
   cs: "Customer Service",
-  supervisor: "Supervisor",
   owner: "Pemilik usaha",
 };
 

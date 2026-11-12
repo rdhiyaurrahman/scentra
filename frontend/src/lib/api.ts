@@ -4,7 +4,7 @@ const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 const TOKEN_KEY = "scentra_token";
 const USER_KEY = "scentra_user";
 
-export type Role = "cs" | "supervisor" | "owner";
+export type Role = "cs" | "owner";
 
 export interface User {
   id: number;

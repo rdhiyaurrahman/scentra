@@ -34,8 +34,8 @@ def cs(client):
 
 
 @pytest.fixture(scope="module")
-def supervisor(client):
-    return login(client, "rina@scentra.test", "rina12345")
+def owner(client):
+    return login(client, "husin@scentra.test", "husin12345")
 
 
 # --- autentikasi -------------------------------------------------------------
@@ -180,18 +180,27 @@ def test_catat_tindakan_tidak_mengklaim_terkirim_di_marketplace(client, cs):
 # --- AC-09 assignment dan status ---------------------------------------------
 
 
-def test_ac09_cs_tidak_boleh_assign(client, cs):
+def test_ac09_pemilik_tidak_boleh_mengubah_percakapan(client, owner, cs):
+    """Matriks PRD bab 4.3: pemilik membaca inbox, tidak menulis ke dalamnya."""
     cid = client.get("/api/conversations", headers=cs).json()[0]["id"]
-    r = client.patch(f"/api/conversations/{cid}", headers=cs, json={"assigned_user_id": 1})
-    assert r.status_code == 403
+    assert client.get(f"/api/conversations/{cid}", headers=owner).status_code == 200
+
+    assert client.patch(f"/api/conversations/{cid}", headers=owner,
+                        json={"status": "Open"}).status_code == 403
+    assert client.post(f"/api/conversations/{cid}/notes", headers=owner,
+                       json={"note_text": "coba"}).status_code == 403
+    assert client.post("/api/conversations", headers=owner, json={
+        "marketplace_code": "shopee", "customer_name": "Uji",
+        "message_text": "Halo",
+    }).status_code == 403
 
 
-def test_ac09_supervisor_assign_tercatat_di_riwayat(client, supervisor, cs):
+def test_ac09_cs_assign_tercatat_di_riwayat(client, cs):
     cid = client.get("/api/conversations", headers=cs).json()[0]["id"]
     users = client.get("/api/users", headers=cs).json()
     target = next(u for u in users if u["role"] == "cs")
 
-    r = client.patch(f"/api/conversations/{cid}", headers=supervisor,
+    r = client.patch(f"/api/conversations/{cid}", headers=cs,
                      json={"assigned_user_id": target["id"], "status": "Assigned"})
     assert r.status_code == 200
 

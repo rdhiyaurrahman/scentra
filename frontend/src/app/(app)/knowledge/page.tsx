@@ -31,7 +31,7 @@ export default function KnowledgePage() {
       <header>
         <h1 className="text-[25px] font-bold tracking-tight">Knowledge Base</h1>
         <p className="mt-0.5 text-sm text-muted">
-          Satu-satunya sumber fakta untuk suggested reply. Dikelola Supervisor/Admin.
+          Satu-satunya sumber fakta untuk suggested reply. Dikelola pemilik usaha.
         </p>
       </header>
 

@@ -1,6 +1,6 @@
 """Endpoint Masalah 2: profitabilitas produk.
 
-Hanya untuk supervisor dan pemilik. CS tidak perlu melihat margin
+Hanya untuk pemilik usaha. CS tidak perlu melihat margin
 (matriks hak akses PRD bab 4.4).
 """
 from __future__ import annotations
@@ -23,7 +23,7 @@ from .models import (
 
 router = APIRouter(prefix="/api/profit")
 
-analyst = require_roles("supervisor", "owner")
+analyst = require_roles("owner")
 
 MAX_IMPORT_ROWS = 5_000           # batasi agar satu unggahan tidak menghabiskan memori
 MAX_IMPORT_BYTES = 2 * 1024 * 1024

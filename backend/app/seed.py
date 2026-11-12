@@ -47,8 +47,6 @@ def seed() -> None:
                  password_hash=hash_password("ayu12345"), role="cs"),
             User(name="Bima Saputra", email="bima@scentra.test",
                  password_hash=hash_password("bima12345"), role="cs"),
-            User(name="Rina Wijaya", email="rina@scentra.test",
-                 password_hash=hash_password("rina12345"), role="supervisor"),
             User(name="Husin", email="husin@scentra.test",
                  password_hash=hash_password("husin12345"), role="owner"),
         ]
@@ -59,7 +57,7 @@ def seed() -> None:
             Marketplace(code="lazada", name="Lazada"),
         ])
         session.commit()
-        ayu, bima, rina, _husin = users
+        ayu, bima, husin = users
 
         # --- katalog ---------------------------------------------------------
         catalog = [
@@ -92,7 +90,7 @@ def seed() -> None:
                 session.flush()
                 if qty is not None:
                     session.add(StockRecord(variant_id=variant.id, quantity=qty,
-                                            updated_at=updated, updated_by=rina.id))
+                                            updated_at=updated, updated_by=husin.id))
 
         # --- FAQ -------------------------------------------------------------
         session.add_all([
@@ -100,7 +98,7 @@ def seed() -> None:
                 answer=("Semua produk kami bersertifikat halal dan dilengkapi label "
                         "resmi pada kemasan."),
                 category="produk", keywords=["halal", "sertifikat", "sertifikasi"],
-                updated_by=rina.id),
+                updated_by=husin.id),
             Faq(question="Berapa lama masa simpan kurma?",
                 answer=("Kurma aman disimpan 12 bulan pada suhu ruang dan terhindar "
                         "dari sinar matahari langsung. Tanggal kedaluwarsa tercetak "
@@ -108,17 +106,17 @@ def seed() -> None:
                 category="produk",
                 keywords=["expired", "kadaluarsa", "kedaluwarsa", "masa simpan",
                           "tahan berapa lama"],
-                updated_by=rina.id),
+                updated_by=husin.id),
             Faq(question="Apakah bisa minta packing tambahan?",
                 answer=("Bisa. Tambahkan catatan \"packing bubble\" saat checkout, "
                         "tanpa biaya tambahan."),
                 category="pengiriman", keywords=["packing", "bubble", "kayu", "pengemasan"],
-                updated_by=rina.id),
+                updated_by=husin.id),
             Faq(question="Apakah bisa beli grosir?",
                 answer=("Pembelian mulai 10 kg mendapat harga grosir. Silakan "
                         "tinggalkan nomor WhatsApp agar tim kami menghubungi."),
                 category="pemesanan", keywords=["grosir", "reseller", "partai", "borongan"],
-                updated_by=rina.id),
+                updated_by=husin.id),
         ])
 
         # --- aturan pengiriman ----------------------------------------------
@@ -180,12 +178,12 @@ def seed() -> None:
                             captured_at=ago(1), author_user_id=ayu.id))
 
         c = created["TT-40255"]
-        c.assigned_user_id = rina.id
+        c.assigned_user_id = bima.id
         session.add(Message(
             conversation_id=c.id, sender_type="internal_note",
             message_text=("Sudah cek foto packing, memang salah ambil SKU. "
                           "Ajukan kirim ulang ke tim gudang."),
-            captured_at=ago(4.5), author_user_id=rina.id))
+            captured_at=ago(4.5), author_user_id=bima.id))
 
         created["LZ-77390"].status = "Open"
         created["SP-88450"].assigned_user_id = bima.id
@@ -203,18 +201,18 @@ def seed() -> None:
         }
         for sku, unit_cost in modal.items():
             session.add(ProductCost(variant_id=sku_id[sku], unit_cost=unit_cost,
-                                    updated_at=ago(72), updated_by=rina.id))
+                                    updated_at=ago(72), updated_by=husin.id))
 
         # Tarif potongan dalam basis poin (1% = 100 bp).
         # Lazada dibiarkan kosong, sejalan dengan aturan pengirimannya yang juga
         # belum diisi, untuk menunjukkan perilaku data belum lengkap.
         session.add_all([
             MarketplaceFee(marketplace_code="shopee", commission_bp=650,
-                           service_fee_bp=250, updated_at=ago(72), updated_by=rina.id),
+                           service_fee_bp=250, updated_at=ago(72), updated_by=husin.id),
             MarketplaceFee(marketplace_code="tiktok", commission_bp=800,
-                           service_fee_bp=200, updated_at=ago(72), updated_by=rina.id),
+                           service_fee_bp=200, updated_at=ago(72), updated_by=husin.id),
             MarketplaceFee(marketplace_code="lazada", commission_bp=None,
-                           service_fee_bp=None, updated_at=ago(72), updated_by=rina.id),
+                           service_fee_bp=None, updated_at=ago(72), updated_by=husin.id),
         ])
 
         # Transaksi pada satu periode uji yang sama (30 hari terakhir).
@@ -246,7 +244,7 @@ def seed() -> None:
                 order_date=ago(days * 24), quantity=qty, gross_sales=gross,
                 voucher_seller=voucher, shipping_borne_by_seller=ship,
                 returned_quantity=rq, returned_amount=ramount,
-                source="import", created_by=rina.id,
+                source="import", created_by=husin.id,
             ))
         session.commit()
 
@@ -254,7 +252,7 @@ def seed() -> None:
         print(f"Seed selesai: {len(users)} pengguna, {total} percakapan, "
               f"{len(catalog)} produk, {len(txs)} transaksi.")
         print("Login demo: ayu@scentra.test / ayu12345 (CS), "
-              "rina@scentra.test / rina12345 (Supervisor), "
+              "bima@scentra.test / bima12345 (CS), "
               "husin@scentra.test / husin12345 (Pemilik)")
 
 

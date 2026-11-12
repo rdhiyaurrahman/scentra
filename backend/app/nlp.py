@@ -235,7 +235,7 @@ def suggest(
                   "Mohon ditunggu, kami kabari secepatnya melalui chat ini."),
             sources=[], needs_verification=True,
             reason=("Aturan retur/refund belum tersedia di knowledge base — "
-                    "wajib diverifikasi supervisor."))
+                    "wajib diperiksa pemilik usaha."))
 
     if intent == "stock_inquiry":
         if product is None:
