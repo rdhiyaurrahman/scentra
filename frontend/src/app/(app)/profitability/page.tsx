@@ -141,7 +141,7 @@ export default function ProfitabilityPage() {
               e.target.value = "";
             }}
           />
-          <Button onClick={() => fileRef.current?.click()}>Impor CSV</Button>
+          <Button variant="primary" onClick={() => fileRef.current?.click()}>Impor CSV</Button>
         </div>
       </header>
 
@@ -209,7 +209,7 @@ export default function ProfitabilityPage() {
         </div>
       ) : null}
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <Kpi label="Penjualan bersih" value={rupiah(o.net_sales)} tone="sky" icon="💰"
              hint={`${o.units_sold} unit terjual`} />
         <Kpi label="Total biaya" value={rupiah(totalCost)} tone="amber" icon="📉"
@@ -374,7 +374,7 @@ function BucketTable({
                   {onDrill ? (
                     <button
                       onClick={() => onDrill(b.key)}
-                      className="focus-ring rounded text-left text-[13px] font-semibold hover:text-lav-fg"
+                      className="focus-ring rounded text-left text-[13px] font-semibold hover:text-accent"
                       title="Lihat transaksinya"
                     >
                       {b.label}

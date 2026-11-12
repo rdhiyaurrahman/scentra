@@ -99,10 +99,12 @@ export function Button({
   children: ReactNode;
   variant?: "primary" | "ghost" | "soft";
 } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  // Referensi tidak memakai tombol berisi warna sama sekali; tindakan utama
+  // digambarkan sebagai tombol bergaris biru di atas putih.
   const styles = {
-    primary: "bg-navy text-white hover:bg-[#262b45]",
+    primary: "bg-white border border-accent-line text-accent hover:bg-accent-soft",
     ghost: "bg-white border border-line text-ink hover:bg-[#f7f8fc]",
-    soft: "bg-[#eceeff] text-[#4a4fc4] hover:bg-[#e3e6ff]",
+    soft: "bg-accent-soft text-accent hover:bg-[#e3ecff]",
   }[variant];
   return (
     <button

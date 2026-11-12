@@ -158,19 +158,22 @@ export default function DashboardPage() {
         </div>
       </div>
 
-        <aside className="card card-accent flex flex-col p-5">
-          <h2 className="text-[15px] font-bold tracking-tight">Mulai dari sini</h2>
-          <p className="mt-1 text-[12.5px] leading-relaxed text-muted">
+        <aside className="card flex flex-col p-5">
+          <div className="flex items-center gap-2.5">
+            <Tile tone="amber">✦</Tile>
+            <h2 className="text-[15px] font-bold tracking-tight">Mulai dari sini</h2>
+          </div>
+          <p className="mt-2.5 text-[12.5px] leading-relaxed text-muted">
             Salin pesan pembeli dari Seller Center, lalu catat di sini supaya antreannya
             jadi satu.
           </p>
           <Link
             href="/inbox"
-            className="focus-ring mt-4 rounded-full bg-white px-4 py-2.5 text-center text-[13px] font-semibold text-ink shadow-sm transition hover:bg-[#f7f8fc]"
+            className="focus-ring mt-4 rounded-full border border-accent-line bg-white px-4 py-2.5 text-center text-[13px] font-semibold text-accent transition hover:bg-accent-soft"
           >
             Catat pesan baru
           </Link>
-          <div className="mt-3 space-y-1.5 text-[12.5px] font-semibold text-lav-fg">
+          <div className="mt-3 space-y-1.5 text-[12.5px] font-semibold text-accent">
             <Link href="/inbox?priority=high" className="block hover:underline">
               Antrean prioritas tinggi
             </Link>
@@ -186,7 +189,7 @@ export default function DashboardPage() {
         </aside>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {CARDS.map((c) => {
           const n = data.totals[c.key] ?? 0;
           const status = c.status(n);
@@ -197,7 +200,7 @@ export default function DashboardPage() {
                 <Pill tone={status.tone}>{status.label}</Pill>
               </div>
               <p className="mt-3 text-xs font-medium text-muted">{c.label}</p>
-              <p className="mt-0.5 text-[30px] leading-none font-bold tracking-tight">{n}</p>
+              <p className="mt-1 text-[34px] leading-none font-bold tracking-tight">{n}</p>
             </div>
           );
         })}
@@ -207,8 +210,8 @@ export default function DashboardPage() {
         <div className="card p-5">
           <div className="mb-1 flex items-center justify-between gap-3">
             <h2 className="text-[15px] font-bold tracking-tight">Antrean prioritas tinggi</h2>
-            <Link href="/inbox?priority=high" className="text-xs font-semibold text-lav-fg">
-              Lihat semua →
+            <Link href="/inbox?priority=high" className="text-xs font-semibold text-accent">
+              Lihat semua
             </Link>
           </div>
           <p className="mb-3 text-xs text-muted">
@@ -233,7 +236,7 @@ export default function DashboardPage() {
                   <Pill tone={statusTone(c.status)}>{c.status}</Pill>
                   <Link
                     href={`/inbox?open=${c.id}`}
-                    className="focus-ring rounded-full bg-[#eceeff] px-3 py-1.5 text-xs font-semibold text-[#4a4fc4]"
+                    className="focus-ring rounded-full border border-accent-line px-3 py-1.5 text-xs font-semibold text-accent transition hover:bg-accent-soft"
                   >
                     Buka
                   </Link>

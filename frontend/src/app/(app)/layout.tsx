@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { clearSession, getUser, type User } from "@/lib/api";
 
@@ -42,6 +42,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [query, setQuery] = useState("");
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  // Pintasan Ctrl/Cmd+K, supaya chip di kolom pencarian benar-benar berarti.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        searchRef.current?.focus();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   useEffect(() => {
     const u = getUser();
@@ -67,7 +80,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="mx-auto flex max-w-[1600px]">
         <aside className="sticky top-0 hidden h-screen w-[232px] flex-none flex-col border-r border-line bg-white px-3.5 py-5 lg:flex">
           <div className="mb-7 flex items-center gap-2.5 px-2">
-            <span className="grid h-9 w-9 place-items-center rounded-[12px] bg-navy text-sm font-bold text-white">
+            <span className="grid h-9 w-9 place-items-center rounded-[12px] bg-accent text-sm font-bold text-white">
               S
             </span>
             <span className="leading-tight">
@@ -118,7 +131,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="min-w-0 flex-1">
           <header className="sticky top-0 z-30 flex items-center gap-4 border-b border-line bg-white/85 px-5 py-3 backdrop-blur-md sm:px-7">
             <div className="lg:hidden">
-              <span className="grid h-8 w-8 place-items-center rounded-[10px] bg-navy text-xs font-bold text-white">
+              <span className="grid h-8 w-8 place-items-center rounded-[10px] bg-accent text-xs font-bold text-white">
                 S
               </span>
             </div>
@@ -156,12 +169,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   ⌕
                 </span>
                 <input
+                  ref={searchRef}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   aria-label="Cari percakapan"
                   placeholder="Cari nama, nomor pesanan, atau isi pesan…"
-                  className="focus-ring w-full rounded-full border border-line bg-[#f7f8fc] py-2 pr-3 pl-8 text-[12.5px] outline-none transition placeholder:text-faint focus:bg-white"
+                  className="focus-ring w-full rounded-full border border-line bg-[#f7f8fc] py-2 pr-16 pl-8 text-[12.5px] outline-none transition placeholder:text-faint focus:bg-white"
                 />
+                <kbd className="pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 rounded-md border border-line bg-white px-1.5 py-0.5 text-[10px] font-semibold text-faint">
+                  Ctrl K
+                </kbd>
               </label>
             </form>
 

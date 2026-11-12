@@ -38,7 +38,7 @@ export default function LoginPage() {
       <div className="w-full max-w-[920px] overflow-hidden rounded-[28px] border border-line bg-white shadow-[0_24px_70px_rgba(20,24,41,0.12)] md:grid md:grid-cols-[1.05fr_1fr]">
         <section className="hidden flex-col justify-between bg-[linear-gradient(160deg,#eef0ff_0%,#e4edff_55%,#dfe9ff_100%)] p-10 md:flex">
           <div className="flex items-center gap-2.5">
-            <span className="grid h-9 w-9 place-items-center rounded-[12px] bg-navy text-sm font-bold text-white">
+            <span className="grid h-9 w-9 place-items-center rounded-[12px] bg-accent text-sm font-bold text-white">
               S
             </span>
             <span className="text-[15px] font-bold tracking-tight">Scentra</span>
